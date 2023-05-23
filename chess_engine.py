@@ -54,6 +54,12 @@ class Square:
             self.contains_piece = True
             self.piece = piece
 
+    def clicked(self):
+        if self.contains_piece:
+            print (self.piece.piece_identifier + ' Was Clicked')
+        else:
+            print ('empty square was clicked')
+
     def __str__(self):
 
         if self.contains_piece:
@@ -81,11 +87,14 @@ class Grid:
     
     def coords(self, 
                pos:tuple) -> Square:
+        
         return self.data[self.__translate_position(pos)]
     
     def pos_contains_piece(self,
                            pos:tuple) -> bool:
         return self.coords(pos).contains_piece
+    
+
     
     def __str__(self):
         ls = [[], [], [], [], [] ,[] ,[] ,[]]
@@ -123,6 +132,8 @@ class Piece:
                 black_pieces.append(self)
                 self.pieces = black_pieces
         
+
+
 
     def die(self):
         print (f'{self} died')
@@ -347,12 +358,12 @@ def init_board():
 
 init_board()
 
-#x = Rook('w', (4, 1))
-#y = Pawn('w', (5, 1))
+# #x = Rook('w', (4, 1))
+# #y = Pawn('w', (5, 1))
 
 
 
-#print (y.get_possible_attack_moves())
-print (grid.coords((1, 2)).piece.get_moves())
-grid.coords((1, 2)).piece.move((1, 3))
-print (grid.coords((1,3)).piece.get_moves())
+# #print (y.get_possible_attack_moves())
+# print (grid.coords((1, 2)).piece.get_moves())
+# grid.coords((1, 2)).piece.move((1, 3))
+# print (grid.coords((1,3)).piece.get_moves())
