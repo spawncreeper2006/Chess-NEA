@@ -6,6 +6,7 @@ pygame.init()
 
 BLACK_WOOD = (145, 60, 26)
 WHITE_WOOD = ( 245, 219, 135)
+BLACK = (0, 0, 0)
 GREEN = ( 0, 255, 0)
 RED = ( 255, 0, 0)
 FPS = 60
@@ -43,18 +44,20 @@ while running:
     screen.fill(WHITE_WOOD)
 
     for n in range(64):
-        y = (8 - n // 8)
+        y = (8 - n // 8) - 1
         x = n % 8
 
         coords = x*SQUARE_SIDE, y*SQUARE_SIDE
         color = WHITE_WOOD if (x + y) % 2 == 0 else BLACK_WOOD
 
         pygame.draw.rect(screen, color, [coords[0], coords[1], SQUARE_SIDE, SQUARE_SIDE],0)
-        square = grid.coords((x, y))
+        square = grid.coords((x+1, 8-y))
 
 
         if square.contains_piece:
-             screen.blit(FONT.render(square.piece.piece_identifier))
+            #print (coords, x, y, square)
+
+            screen.blit(FONT.render(square.piece.piece_identifier, True, BLACK), coords)
 
 
 
