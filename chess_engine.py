@@ -6,6 +6,10 @@ BISHOP_VECTORS = [(1, 1), (-1,-1), (-1, 1), (1, -1)]
 QUEEN_VECTORS = ROOK_VECTORS + BISHOP_VECTORS
 KING_VECTORS = QUEEN_VECTORS
 
+BLACK_WOOD = (145, 60, 26)
+WHITE_WOOD = ( 245, 219, 135)
+GREEN = (0, 255, 0)
+
 white_pieces = []
 black_pieces = []
 
@@ -39,9 +43,11 @@ def add_coords(c1:tuple,
     return tuple([a + b for a , b in zip(c1, c2)])
 
 class Square:
-    def __init__(self):
+    def __init__(self, color:tuple):
         self.contains_piece = False
         self.piece = None
+        self.color = color
+        self.default_color = color
 
     def update_piece(self,
                      piece=None):
@@ -57,6 +63,7 @@ class Square:
     def clicked(self):
         if self.contains_piece:
             print (self.piece.piece_identifier + ' Was Clicked')
+            self.color = GREEN
         else:
             print ('empty square was clicked')
 
@@ -70,7 +77,7 @@ class Square:
 class Grid:
     def __init__(self):
         self.data = []
-        [self.data.append(Square()) for _ in range(64)]
+        [self.data.append(Square(WHITE_WOOD if (i%8 + i // 8) % 2 == 0 else BLACK_WOOD)) for i in range(64)]
 
     def __translate_position(self, pos:tuple) -> tuple:
         pos = (pos[0]-1, pos[1]-1)
