@@ -9,6 +9,7 @@ KING_VECTORS = QUEEN_VECTORS
 BLACK_WOOD = (145, 60, 26)
 WHITE_WOOD = ( 245, 219, 135)
 GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
 
 white_pieces = []
 black_pieces = []
@@ -29,10 +30,6 @@ def get_team_attack_moves(team:str) -> set:
             moves += piece.get_moves()
 
     return set(moves)
-
-
-    
-
 
 
 def add_coords(c1:tuple,
@@ -59,6 +56,8 @@ class Square:
         else:
             self.contains_piece = True
             self.piece = piece
+        
+    
 
     def clicked(self):
         if self.contains_piece:
@@ -66,6 +65,12 @@ class Square:
             self.color = GREEN
         else:
             print ('empty square was clicked')
+
+    def is_possible_move(self):
+        self.color = BLUE
+
+    def back_to_default_color(self):
+        self.color = self.default_color
 
     def __str__(self):
 
@@ -77,7 +82,8 @@ class Square:
 class Grid:
     def __init__(self):
         self.data = []
-        [self.data.append(Square(WHITE_WOOD if (i%8 + i // 8) % 2 == 0 else BLACK_WOOD)) for i in range(64)]
+        [self.data.append(Square(WHITE_WOOD if (i%8 + i // 8) % 2 == 1 else BLACK_WOOD)) for i in range(64)]
+        self.current_turn = 'w'
 
     def __translate_position(self, pos:tuple) -> tuple:
         pos = (pos[0]-1, pos[1]-1)
@@ -111,8 +117,6 @@ class Grid:
         return '\n'.join([''.join(i) for i in ls])
 
 grid = Grid()
-
-
 class Piece:
     def __init__(self, color:str, pos:tuple, piece_type:str):
 
@@ -153,7 +157,10 @@ class Piece:
         target_square = grid.coords(new_pos)
 
         if target_square.contains_piece:
+            print ('attempting to kill piece')
+            
             target_square.piece.die()
+            target_square.update_piece(self)
         else:
             target_square.update_piece(self)
         self.pos = new_pos
@@ -192,7 +199,6 @@ class Piece:
         
         return False
 
-
 class Pawn(Piece):
     def __init__(self, color:str, pos:tuple):
         super().__init__(color, pos, 'p')
@@ -229,9 +235,6 @@ class Pawn(Piece):
                 moves.append(new_pos)
         return moves
 
-
-
-
 class Knight(Piece):
     def __init__(self, color:str, pos:tuple):
         super().__init__(color, pos, 'kn')
@@ -248,8 +251,6 @@ class Knight(Piece):
 
         return moves
         
-        
-
 class Rook(Piece):
     def __init__(self, color:str, pos:tuple):
         super().__init__(color, pos, 'r')
@@ -272,8 +273,6 @@ class Rook(Piece):
                     break
 
         return moves
-
-        
 
 class Bishop(Piece):
     def __init__(self, color:str, pos:tuple):
@@ -354,11 +353,11 @@ def init_board():
     Bishop('b', (3, 8))
     Bishop('b', (6, 8))
 
-    King('w', (4, 1))
-    Queen('w', (5, 1))
+    King('w', (5, 1))
+    Queen('w', (4, 1))
 
-    King('b', (4, 8))
-    Queen('b', (5, 8))
+    King('b', (5, 8))
+    Queen('b', (4, 8))
 
 
 

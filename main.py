@@ -17,6 +17,10 @@ def screen_to_chess_coords(coords:tuple) -> tuple:
     coords = int(coords[0]), int(coords[1])
     return coords
 
+def back_to_default(selected_sqaure:Square, possible_moves:tuple):
+    selected.back_to_default_color()
+    [i.back_to_default_color() for i in possible_moves]
+
 pygame.init()
 
 
@@ -27,13 +31,15 @@ FONT = pygame.font.SysFont(None, 24)
 
 size = (WIDTH, HEIGHT)
 screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Easy Chess")
+pygame.display.set_caption("Easy Chess White Turn")
 
 running = True
 
 
 clock = pygame.time.Clock()
  
+selected = None
+current_possible_moves = set()
 
 while running:
 
@@ -42,12 +48,44 @@ while running:
               running = False
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
-             pos = pygame.mouse.get_pos()
-             coords = screen_to_chess_coords(pos)
+            pos = pygame.mouse.get_pos()
+            coords = screen_to_chess_coords(pos)
 
+            this_square = grid.coords(coords)
+            
 
-             grid.coords(coords).clicked()
+            if this_square.contains_piece and this_square.piece.color == grid.current_turn:
+            
 
+                this_square.clicked()
+                
+
+                if selected != None and selected != this_square:
+                    selected.back_to_default_color()
+                    for square in current_possible_moves:
+                        square.back_to_default_color()
+
+                else:
+
+                    selected = this_square
+                    current_possible_moves = []
+                    current_possible_move_coords = selected.piece.get_moves()
+                    for square_coords in current_possible_move_coords:
+                        square = grid.coords(square_coords)
+                        square.is_possible_move()
+                        current_possible_moves.append(square)
+                        
+            elif this_square in current_possible_moves:
+                selected.piece.move(coords)
+                back_to_default(selected, current_possible_moves)
+                selected = None
+                current_possible_moves = set()
+
+            elif selected != None:
+
+                back_to_default(selected, current_possible_moves)
+                selected = None
+                current_possible_moves = set()
  
     screen.fill(WHITE_WOOD)
 
@@ -58,7 +96,7 @@ while running:
         coords = x*SQUARE_SIDE, y*SQUARE_SIDE
         chess_coords = screen_to_chess_coords(coords)
         
-        #color = WHITE_WOOD if (x + y) % 2 == 0 else BLACK_WOOD
+
         square = grid.coords(chess_coords)
         
 
@@ -67,16 +105,9 @@ while running:
 
 
         if square.contains_piece:
-            #print (coords, x, y, square)
-            
 
             screen.blit(FONT.render(square.piece.piece_identifier, True, BLACK), coords)
 
-
-
-
-    # pygame.draw.line(screen, GREEN, [0, 0], [100, 100], 5)
-    # pygame.draw.ellipse(screen, BLACK, [20,20,250,100], 2)
  
  
     pygame.display.flip()
