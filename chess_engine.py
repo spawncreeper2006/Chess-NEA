@@ -85,6 +85,13 @@ class Grid:
         [self.data.append(Square(WHITE_WOOD if (i%8 + i // 8) % 2 == 1 else BLACK_WOOD)) for i in range(64)]
         self.current_turn = 'w'
 
+    def change_current_turn(self):
+        match self.current_turn:
+            case 'w':
+                self.current_turn = 'b'
+            case 'b':
+                self.current_turn = 'w'
+
     def __translate_position(self, pos:tuple) -> tuple:
         pos = (pos[0]-1, pos[1]-1)
         return pos[0]+pos[1]*8
@@ -165,6 +172,7 @@ class Piece:
             target_square.update_piece(self)
         self.pos = new_pos
         self.has_moved = True
+        grid.change_current_turn()
 
     def same_color(self,
                    color:str) -> bool:
