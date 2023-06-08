@@ -65,21 +65,22 @@ while running:
                     for square in current_possible_moves:
                         square.back_to_default_color()
 
-                else:
-
-                    selected = this_square
-                    current_possible_moves = []
-                    current_possible_move_coords = selected.piece.get_moves()
-                    for square_coords in current_possible_move_coords:
-                        square = grid.coords(square_coords)
-                        square.is_possible_move()
-                        current_possible_moves.append(square)
+                
+                print ('new selected square')
+                selected = this_square
+                current_possible_moves = []
+                current_possible_move_coords = selected.piece.get_moves()
+                for square_coords in current_possible_move_coords:
+                    square = grid.coords(square_coords)
+                    square.is_possible_move()
+                    current_possible_moves.append(square)
                         
             elif this_square in current_possible_moves:
                 selected.piece.move(coords)
                 back_to_default(selected, current_possible_moves)
                 selected = None
                 current_possible_moves = set()
+                
 
             elif selected != None:
 
