@@ -14,6 +14,13 @@ BLUE = (0, 0, 255)
 white_pieces = []
 black_pieces = []
 
+def in_grid(pos:tuple) -> bool:
+    for xy in pos:
+        if xy < 1 or xy > 8:
+            return False
+
+    return True
+
 def get_team_attack_moves(team:str) -> set:
     moves = []
     team_pieces = []
@@ -98,12 +105,8 @@ class Grid:
 
     def in_grid(self,
                 pos:tuple) -> bool:
-        
-        for xy in pos:
-            if xy < 1 or xy > 8:
-                return False
-        
-        return True
+        return in_grid(pos)
+
     
     def coords(self, 
                pos:tuple) -> Square:
