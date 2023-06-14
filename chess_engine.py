@@ -1,4 +1,5 @@
 
+from copy import deepcopy, copy
 
 KNIGHT_VECTORS = [(2, 1), (2, -1), (1, -2), (-1, -2), (-2, 1), (-2, -1), (1, 2), (-1, 2)]
 ROOK_VECTORS = [(1, 0), (0, 1), (-1, 0), (0, -1)]
@@ -10,9 +11,10 @@ BLACK_WOOD = (145, 60, 26)
 WHITE_WOOD = ( 245, 219, 135)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+SEP = "==============================================="
+sep = lambda: print(SEP)
 
-white_pieces = []
-black_pieces = []
+
 
 def in_grid(pos:tuple) -> bool:
     for xy in pos:
@@ -21,23 +23,49 @@ def in_grid(pos:tuple) -> bool:
 
     return True
 
-def get_team_attack_moves(team:str) -> set:
+def get_team_attack_moves(team:str, this_grid) -> set:
+    
     moves = []
     team_pieces = []
     match team:
         case 'w':
-            team_pieces = white_pieces
+            team_pieces = this_grid.white_pieces
         case 'b':
-            team_pieces = black_pieces
+            team_pieces = this_grid.black_pieces
 
     for piece in team_pieces:
-        if type(piece) is Pawn:
-            moves += piece.get_possible_attack_moves()
-        else:
-            moves += piece.get_moves()
+
+        moves += piece.get_possible_attack_moves(this_grid)
+
 
     return set(moves)
 
+def does_not_endanger_king(piece, grid, pos) -> bool:
+    possible_grid = deepcopy(grid)
+    
+    possible_grid.white_pieces = grid.white_pieces.copy()
+
+    possible_grid.black_pieces = grid.black_pieces.copy()
+    
+    piece_position = piece.pos
+    # del piece
+    piece = possible_grid.coords(piece_position).piece
+    possible_grid = piece.move(possible_grid, pos)
+
+
+    enemy_attack_moves = get_team_attack_moves(possible_grid.current_turn, possible_grid)
+
+    sep()
+    print (possible_grid)
+    print (enemy_attack_moves)
+    print (possible_grid.king_pos[piece.color], possible_grid.king_pos[piece.color] in enemy_attack_moves)
+    
+    if not possible_grid.king_pos[piece.color] in enemy_attack_moves:
+        
+        return True
+    else:
+        
+        return False
 
 def add_coords(c1:tuple,
                c2:tuple) -> tuple:
@@ -46,6 +74,13 @@ def add_coords(c1:tuple,
     
     return tuple([a + b for a , b in zip(c1, c2)])
 
+def other_team(team:str) -> str:
+    match team:
+        case 'w':
+            return 'b'
+        case 'b':
+            return 'w'
+        
 class Square:
     def __init__(self, color:tuple):
         self.contains_piece = False
@@ -91,6 +126,12 @@ class Grid:
         self.data = []
         [self.data.append(Square(WHITE_WOOD if (i%8 + i // 8) % 2 == 1 else BLACK_WOOD)) for i in range(64)]
         self.current_turn = 'w'
+        self.white_checked = False
+        self.black_checked = False
+        self.white_pieces = []
+        self.black_pieces = []
+        self.king_pos = {}
+
 
     def change_current_turn(self):
         match self.current_turn:
@@ -99,7 +140,7 @@ class Grid:
             case 'b':
                 self.current_turn = 'w'
 
-    def __translate_position(self, pos:tuple) -> tuple:
+    def translate_position(self, pos:tuple) -> tuple:
         pos = (pos[0]-1, pos[1]-1)
         return pos[0]+pos[1]*8
 
@@ -111,7 +152,7 @@ class Grid:
     def coords(self, 
                pos:tuple) -> Square:
         
-        return self.data[self.__translate_position(pos)]
+        return self.data[self.translate_position(pos)]
     
     def pos_contains_piece(self,
                            pos:tuple) -> bool:
@@ -126,9 +167,11 @@ class Grid:
             ls[7-count//8].append(str(piece))
         return '\n'.join([''.join(i) for i in ls])
 
-grid = Grid()
+
 class Piece:
-    def __init__(self, color:str, pos:tuple, piece_type:str):
+    def __init__(self, grid, color:str, pos:tuple, piece_type:str):
+
+        
 
         self.color = color
         self.pos = pos
@@ -147,11 +190,13 @@ class Piece:
 
         match color:
             case 'w':
-                white_pieces.append(self)
-                self.pieces = white_pieces
+                grid.white_pieces.append(self)
+                self.pieces = grid.white_pieces
             case 'b':
-                black_pieces.append(self)
-                self.pieces = black_pieces
+                grid.black_pieces.append(self)
+                self.pieces = grid.black_pieces
+
+
         
 
 
@@ -162,9 +207,12 @@ class Piece:
 
 
     def move(self,
+             new_grid:Grid,
              new_pos:tuple):
-        grid.coords(self.pos).update_piece(None)
-        target_square = grid.coords(new_pos)
+
+        new_grid.coords(self.pos).update_piece(None)
+        
+        target_square = new_grid.coords(new_pos)
 
         if target_square.contains_piece:
             print ('attempting to kill piece')
@@ -173,9 +221,11 @@ class Piece:
             target_square.update_piece(self)
         else:
             target_square.update_piece(self)
+        
         self.pos = new_pos
         self.has_moved = True
-        grid.change_current_turn()
+        new_grid.change_current_turn()
+        return new_grid
 
     def same_color(self,
                    color:str) -> bool:
@@ -185,6 +235,7 @@ class Piece:
         return self.piece_identifier
     
     def valid_move(self,
+                   grid,
                    pos:tuple) -> bool:
         if not grid.in_grid(pos):
             return False
@@ -198,6 +249,7 @@ class Piece:
         return True
     
     def valid_take(self,
+                   grid, 
                    pos:tuple) -> bool:
         
         if not grid.in_grid(pos):
@@ -211,12 +263,12 @@ class Piece:
         return False
 
 class Pawn(Piece):
-    def __init__(self, color:str, pos:tuple):
-        super().__init__(color, pos, 'p')
+    def __init__(self, grid, color:str, pos:tuple):
+        super().__init__(grid, color, pos, 'p')
         
         self.yvector = 1 if self.color == 'w' else -1
 
-    def get_moves(self) -> list:
+    def get_moves(self, grid) -> set:
         
         moves = []
         
@@ -228,53 +280,58 @@ class Pawn(Piece):
             if not self.has_moved:
                 new_pos = (new_pos[0], new_pos[1] + self.yvector)
                 if not grid.pos_contains_piece(new_pos):
+
                     moves.append(new_pos)
 
 
         for x in (-1, 1):
             new_pos = add_coords(self.pos, (x, self.yvector))
-            if self.valid_take(new_pos):
+            if self.valid_take(grid, new_pos):
                 moves.append(new_pos)
 
-        return moves
+        return set(moves)
     
-    def get_possible_attack_moves(self) -> list:
+    def get_possible_attack_moves(self, grid) -> set:
         moves = []
         for x in (-1, 1):
             new_pos = add_coords(self.pos, (x, self.yvector))
-            if self.valid_move(new_pos):
+            if self.valid_move(grid, new_pos):
                 moves.append(new_pos)
-        return moves
+        return set(moves)
 
 class Knight(Piece):
-    def __init__(self, color:str, pos:tuple):
-        super().__init__(color, pos, 'kn')
+    def __init__(self, grid, color:str, pos:tuple):
+        super().__init__(grid, color, pos, 'kn')
+        
 
 
     
-    def get_moves(self):
+    def get_moves(self, grid) -> set:
         moves = []
 
         for vector in KNIGHT_VECTORS:
             new_coord = add_coords(self.pos, vector)
-            if self.valid_move(new_coord):
+            if self.valid_move(grid, new_coord):
                 moves.append(new_coord)
 
-        return moves
+        return set(moves)
+        
+    def get_possible_attack_moves(self, grid) -> set:
+        return self.get_moves(grid)
         
 class Rook(Piece):
-    def __init__(self, color:str, pos:tuple):
-        super().__init__(color, pos, 'r')
+    def __init__(self, grid, color:str, pos:tuple):
+        super().__init__(grid, color, pos, 'r')
 
 
-    def get_moves(self):
+    def get_moves(self, grid) -> set:
         moves = []
         for vector in ROOK_VECTORS:
             
             pos = self.pos
             while True:
                 pos = add_coords(pos, vector)
-                if self.valid_move(pos):
+                if self.valid_move(grid, pos):
                     moves.append(pos)
                 
                 else:
@@ -283,20 +340,23 @@ class Rook(Piece):
                 if grid.coords(pos).contains_piece:
                     break
 
-        return moves
+        return set(moves)
+    
+    def get_possible_attack_moves(self, grid) -> set:
+        return self.get_moves(grid)
 
 class Bishop(Piece):
-    def __init__(self, color:str, pos:tuple):
-        super().__init__(color, pos, 'b')
+    def __init__(self, grid, color:str, pos:tuple):
+        super().__init__(grid, color, pos, 'b')
 
-    def get_moves(self):
+    def get_moves(self, grid) -> set:
         moves = []
         for vector in BISHOP_VECTORS:
             
             pos = self.pos
             while True:
                 pos = add_coords(pos, vector)
-                if self.valid_move(pos):
+                if self.valid_move(grid, pos):
                     moves.append(pos)
                 else:
                     break
@@ -304,19 +364,22 @@ class Bishop(Piece):
                 if grid.coords(pos).contains_piece:
                     break
 
-        return moves
+        return set(moves)
+        
+    def get_possible_attack_moves(self, grid) -> set:
+        return self.get_moves(grid)
 
 class Queen(Piece):
-    def __init__(self, color:str, pos:tuple):
-        super().__init__(color, pos, 'q')
+    def __init__(self, grid, color:str, pos:tuple):
+        super().__init__(grid, color, pos, 'q')
 
-    def get_moves(self):
+    def get_moves(self, grid) -> set:
         moves = []
         for vector in QUEEN_VECTORS:
             pos = self.pos
             while True:
                 pos = add_coords(pos, vector)
-                if self.valid_move(pos):
+                if self.valid_move(grid, pos):
                     moves.append(pos)
                 else:
                     break
@@ -324,56 +387,64 @@ class Queen(Piece):
                 if grid.coords(pos).contains_piece:
                     break
 
-        return moves
+        return set(moves)
+    
+    def get_possible_attack_moves(self, grid) -> set:
+        return self.get_moves(grid)
 
 class King(Piece):
-    def __init__(self, color:str, pos:tuple):
-        super().__init__(color, pos, 'k')
+    def __init__(self, grid, color:str, pos:tuple):
+        super().__init__(grid, color, pos, 'k')
+        grid.king_pos[color] = pos
 
-    def get_moves(self):
+    def get_moves(self, grid) -> set:
+        
         moves = []
         for vector in KING_VECTORS:
             pos = self.pos
             pos = add_coords(pos, vector)
-            if self.valid_move(pos):
+            if self.valid_move(grid, pos):
                 moves.append(pos)
 
 
-        return moves
+        return set(moves)
+    
+    def get_possible_attack_moves(self, grid) -> set:
+        return self.get_moves(grid)
 
 
 
-def init_board():
+def init_board(grid):
 
     for x in range(1,9):
-        Pawn('w', (x, 2))
-        Pawn('b', (x, 7))
+        Pawn(grid, 'w', (x, 2))
+        Pawn(grid, 'b', (x, 7))
 
-    Rook('w', (1,1))
-    Rook('w', (8, 1))
-    Rook('b', (1, 8))
-    Rook('b', (8, 8))
+    Rook(grid, 'w', (1,1))
+    Rook(grid, 'w', (8, 1))
+    Rook(grid, 'b', (1, 8))
+    Rook(grid, 'b', (8, 8))
 
-    Knight('w', (2, 1))
-    Knight('w', (7, 1))
-    Knight('b', (2, 8))
-    Knight('b', (7, 8))
+    Knight(grid, 'w', (2, 1))
+    Knight(grid, 'w', (7, 1))
+    Knight(grid, 'b', (2, 8))
+    Knight(grid, 'b', (7, 8))
 
-    Bishop('w', (3, 1))
-    Bishop('w', (6, 1))
-    Bishop('b', (3, 8))
-    Bishop('b', (6, 8))
+    Bishop(grid, 'w', (3, 1))
+    Bishop(grid, 'w', (6, 1))
+    Bishop(grid, 'b', (3, 8))
+    Bishop(grid, 'b', (6, 8))
 
-    King('w', (5, 1))
-    Queen('w', (4, 1))
+    King(grid, 'w', (5, 1))
+    Queen(grid, 'w', (4, 1))
 
-    King('b', (5, 8))
-    Queen('b', (4, 8))
-
-
+    King(grid, 'b', (5, 8))
+    Queen(grid, 'b', (4, 8))
 
 
-init_board()
+
+grid = Grid()
+init_board(grid)
 
 # #x = Rook('w', (4, 1))
 # #y = Pawn('w', (5, 1))

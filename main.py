@@ -10,6 +10,9 @@ WIDTH = 600
 HEIGHT = 600
 SQUARE_SIDE = WIDTH / 8
 
+GRID_OUTLINE_COLOR = (66, 34, 25)
+GRID_OUTLINE = 30
+
 
 def screen_to_chess_coords(coords:tuple) -> tuple:
     coords = coords[0] // SQUARE_SIDE, coords[1] // SQUARE_SIDE
@@ -29,6 +32,7 @@ class Pygame_Chess_Grid:
         self.pos = pos
         self.size = size
         self.square_size = size // 8
+        self.chess_coords_transform = lambda t: t
 
     def screen_to_chess_coords(self, coords:tuple) -> tuple:
 
@@ -36,6 +40,7 @@ class Pygame_Chess_Grid:
         coords = coords[0] // self.square_size, coords[1] // self.square_size
         coords = coords[0] + 1, 7 - coords[1] + 1
         coords = int(coords[0]), int(coords[1])
+        coords = self.chess_coords_transform(coords)
         return coords
 
     
@@ -52,10 +57,20 @@ class Pygame_Chess_Grid:
         else:
             return None
         
-    def render_grid(self, screen:pygame.surface.Surface):
+    def render_grid(self, screen:pygame.surface.Surface, view_direction:str):
+
+        pygame.draw.rect(screen, GRID_OUTLINE_COLOR, [self.pos[0] - GRID_OUTLINE, self.pos[1] - GRID_OUTLINE, 2 * GRID_OUTLINE + self.size, GRID_OUTLINE])
+        pygame.draw.rect(screen, GRID_OUTLINE_COLOR, [self.pos[0] - GRID_OUTLINE, self.pos[1] + self.size, 2 * GRID_OUTLINE + self.size, GRID_OUTLINE])
+        pygame.draw.rect(screen, GRID_OUTLINE_COLOR, [self.pos[0] - GRID_OUTLINE, self.pos[1], GRID_OUTLINE, self.size])
+        pygame.draw.rect(screen, GRID_OUTLINE_COLOR, [self.pos[0] + self.size, self.pos[1], GRID_OUTLINE, self.size])
+        match view_direction:
+            case "w":
+                self.chess_coords_transform = lambda t:t
+            case "b":
+                self.chess_coords_transform = lambda t: (t[0], 9-t[1])
         
         for n in range(64):
-            y = (8 - n // 8) - 1
+            y = (n // 8)
             x = n % 8
 
 
@@ -63,6 +78,9 @@ class Pygame_Chess_Grid:
             coords = self.pos[0] + x * self.square_size, self.pos[1] + y * self.square_size
 
             chess_coords = self.screen_to_chess_coords(coords)
+
+            
+
 
             square = grid.coords(chess_coords)
             
@@ -73,7 +91,7 @@ class Pygame_Chess_Grid:
 
 
 pygame.display.set_caption("Easy Chess: White Turn")
-pygame_chess_grid = Pygame_Chess_Grid((0, 100), 400)
+pygame_chess_grid = Pygame_Chess_Grid((100, 100), 400)
 
 size = (WIDTH, HEIGHT)
 screen = pygame.display.set_mode(size)
@@ -109,14 +127,23 @@ while running:
                     print ('new selected square')
                     selected = this_square
                     current_possible_moves = []
-                    current_possible_move_coords = selected.piece.get_moves()
+                    current_possible_move_coords = selected.piece.get_moves(grid)
+                    to_remove = []
+                    for move in current_possible_move_coords:
+                        if not does_not_endanger_king(this_square.piece, grid, move):
+                            # current_possible_move_coords.remove(move)
+                            to_remove.append(move)
+                    for item in to_remove:
+                        current_possible_move_coords.remove(item)
+                            
+                    
                     for square_coords in current_possible_move_coords:
                         square = grid.coords(square_coords)
                         square.is_possible_move()
                         current_possible_moves.append(square)
-                            
+                        
                 elif this_square in current_possible_moves:
-                    selected.piece.move(coords)
+                    selected.piece.move(grid, coords)
                     back_to_default(selected, current_possible_moves)
                     selected = None
                     current_possible_moves = set()
@@ -135,7 +162,7 @@ while running:
  
     screen.fill(WHITE)
 
-    pygame_chess_grid.render_grid(screen)
+    pygame_chess_grid.render_grid(screen, grid.current_turn)
 
 
  
