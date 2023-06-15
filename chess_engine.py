@@ -55,11 +55,7 @@ def does_not_endanger_king(piece, grid, pos) -> bool:
 
     enemy_attack_moves = get_team_attack_moves(possible_grid.current_turn, possible_grid)
 
-    sep()
-    print (possible_grid)
-    print (enemy_attack_moves)
-    print (possible_grid.king_pos[piece.color], possible_grid.king_pos[piece.color] in enemy_attack_moves)
-    
+
     if not possible_grid.king_pos[piece.color] in enemy_attack_moves:
         
         return True
@@ -103,10 +99,10 @@ class Square:
 
     def clicked(self):
         if self.contains_piece:
-            print (self.piece.piece_identifier + ' Was Clicked')
+
             self.color = GREEN
         else:
-            print ('empty square was clicked')
+            pass
 
     def is_possible_move(self):
         self.color = BLUE
