@@ -48,7 +48,7 @@ class Pygame_Chess_Grid:
     def handle_click(self, click_pos:tuple):
         
         coords = self.screen_to_chess_coords(click_pos)
-        print (coords)
+
 
         
 
@@ -123,15 +123,12 @@ while running:
                         for square in current_possible_moves:
                             square.back_to_default_color()
 
-                    
-                    print ('new selected square')
                     selected = this_square
                     current_possible_moves = []
                     current_possible_move_coords = selected.piece.get_moves(grid)
                     to_remove = []
                     for move in current_possible_move_coords:
                         if not does_not_endanger_king(this_square.piece, grid, move):
-                            # current_possible_move_coords.remove(move)
                             to_remove.append(move)
                     for item in to_remove:
                         current_possible_move_coords.remove(item)
