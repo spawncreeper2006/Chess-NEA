@@ -43,9 +43,9 @@ def get_team_attack_moves(team:str, this_grid) -> set:
 def does_not_endanger_king(piece, grid, pos) -> bool:
     possible_grid = deepcopy(grid)
     
-    possible_grid.white_pieces = grid.white_pieces.copy()
+    # possible_grid.white_pieces = grid.white_pieces.copy()
 
-    possible_grid.black_pieces = grid.black_pieces.copy()
+    # possible_grid.black_pieces = grid.black_pieces.copy()
     piece_position = piece.pos
     piece = possible_grid.coords(piece_position).piece
     possible_grid = piece.move(possible_grid, pos)
@@ -55,7 +55,7 @@ def does_not_endanger_king(piece, grid, pos) -> bool:
 
     enemy_attack_moves = get_team_attack_moves(possible_grid.current_turn, possible_grid)
     
-    return not possible_grid.king_pos[possible_grid.current_turn] in enemy_attack_moves
+    return not possible_grid.king_pos[other_team(possible_grid.current_turn)] in enemy_attack_moves
         
 
 
@@ -130,10 +130,11 @@ class Square:
 class Grid:
     def __init__(self):
         self.data = []
-        [self.data.append(Square(WHITE_WOOD if (i%8 + i // 8) % 2 == 1 else BLACK_WOOD)) for i in range(64)]
+        [self.data.append(Square(WHITE_WOOD if (i % 8 + i // 8) % 2 == 1 else BLACK_WOOD)) for i in range(64)]
         self.current_turn = 'w'
         self.white_checked = False
         self.black_checked = False
+        self.winner = ''
         self.white_pieces = []
         self.black_pieces = []
         self.king_pos = {}

@@ -1,7 +1,7 @@
 import pygame
 from chess_engine import *
 import os
-import warnings
+
 
 pygame.init()
 
@@ -93,8 +93,6 @@ class Pygame_Chess_Grid:
             y = (n // 8)
             x = n % 8
 
-
-
             coords = self.pos[0] + x * self.square_size, self.pos[1] + y * self.square_size
 
             chess_coords = self.screen_to_chess_coords(coords)
@@ -127,8 +125,6 @@ current_possible_moves = set()
 
 FOLDER_NAME = 'assets'
 
-
-
 BB_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'black_bishop.png'))
 BK_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'black_king.png'))
 BKN_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'black_knight.png'))
@@ -158,7 +154,8 @@ MAIN_PIECE_IMAGE_DICT = {'BB': pygame.transform.scale(BB_IMAGE, SQUARE_DIMENSION
                          'WQ': pygame.transform.scale(WQ_IMAGE, SQUARE_DIMENSIONS),
                          'WR': pygame.transform.scale(WR_IMAGE, SQUARE_DIMENSIONS)}
 
-
+MOVE_SOUND = pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'moving_piece.wav'))
+CHECK_SOUND = pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'check.wav'))
 
 
 while running:
@@ -217,20 +214,28 @@ while running:
                     current_possible_moves = []
                     current_possible_move_coords = []
 
+                    if grid.white_checked or grid.black_checked:
+                        pygame.mixer.Sound.play(CHECK_SOUND)
+                    else:
+                        pygame.mixer.Sound.play(MOVE_SOUND)
+
                     
                     
 
-                elif selected != None:
+                elif selected != None: #CLICKED AWAY FROM PIECE
 
                     back_to_default(selected, current_possible_moves)
                     selected = None
                     current_possible_moves = set()
+                    current_possible_move_coords = []
  
     screen.fill(WHITE)
     pygame_chess_grid.render_grid(screen, grid.current_turn)
 
     if grid.white_checked or grid.black_checked:
         display_check(screen)
+
+
 
 
 
