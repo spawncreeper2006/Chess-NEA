@@ -105,7 +105,8 @@ class Square:
             pass
 
     def is_possible_move(self):
-        self.color = BLUE
+        # self.color = BLUE
+        pass
 
     def back_to_default_color(self):
         self.color = self.default_color
@@ -180,7 +181,7 @@ class Piece:
             piece_type = piece_type[0].upper() + piece_type[1:]
             
         self.piece_identifier = self.color.upper() + piece_type
-        self.piece_identifier = self.piece_identifier.zfill(4).replace('0', ' ')
+
 
         self.pieces = []
 
@@ -227,7 +228,7 @@ class Piece:
         return self.color==color
 
     def __str__(self):
-        return self.piece_identifier
+        return self.piece_identifier.zfill(4).replace('0', ' ')
     
     def valid_move(self,
                    grid,
@@ -462,6 +463,8 @@ def init_board(grid):
 
 grid = Grid()
 init_board(grid)
+
+
 
 # #x = Rook('w', (4, 1))
 # #y = Pawn('w', (5, 1))
