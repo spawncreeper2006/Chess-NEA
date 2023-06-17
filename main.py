@@ -1,5 +1,8 @@
 import pygame
 from chess_engine import *
+import os
+
+pygame.init()
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -10,8 +13,16 @@ WIDTH = 600
 HEIGHT = 600
 SQUARE_SIDE = WIDTH / 8
 
+SQUARE_DIMENSIONS = (SQUARE_SIDE - 25, SQUARE_SIDE - 25)
+
 GRID_OUTLINE_COLOR = (66, 34, 25)
 GRID_OUTLINE = 30
+MAIN_PIECE_IMAGE_DICT = {}
+FONT = pygame.font.SysFont(None, 24)
+BLUE_DOT_OFFSET = 25
+
+
+
 
 
 def screen_to_chess_coords(coords:tuple) -> tuple:
@@ -24,8 +35,15 @@ def back_to_default(selected_sqaure:Square, possible_moves:tuple):
     selected.back_to_default_color()
     [i.back_to_default_color() for i in possible_moves]
 
-pygame.init()
-FONT = pygame.font.SysFont(None, 24)
+
+
+def display_check(screen:pygame.surface.Surface, color=RED):
+    screen.blit(FONT.render("Check", False, color), (WIDTH//2 - 40, 20))
+
+def display_checkmate(screen:pygame.surface.Surface, color=RED):
+    pass
+
+current_possible_move_coords = []
 
 class Pygame_Chess_Grid:
     def __init__(self, pos:tuple, size:float):
@@ -33,6 +51,7 @@ class Pygame_Chess_Grid:
         self.size = size
         self.square_size = size // 8
         self.chess_coords_transform = lambda t: t
+        
 
     def screen_to_chess_coords(self, coords:tuple) -> tuple:
 
@@ -63,6 +82,7 @@ class Pygame_Chess_Grid:
         pygame.draw.rect(screen, GRID_OUTLINE_COLOR, [self.pos[0] - GRID_OUTLINE, self.pos[1] + self.size, 2 * GRID_OUTLINE + self.size, GRID_OUTLINE])
         pygame.draw.rect(screen, GRID_OUTLINE_COLOR, [self.pos[0] - GRID_OUTLINE, self.pos[1], GRID_OUTLINE, self.size])
         pygame.draw.rect(screen, GRID_OUTLINE_COLOR, [self.pos[0] + self.size, self.pos[1], GRID_OUTLINE, self.size])
+
         match view_direction:
             case "w":
                 self.chess_coords_transform = lambda t:t
@@ -79,15 +99,20 @@ class Pygame_Chess_Grid:
 
             chess_coords = self.screen_to_chess_coords(coords)
 
-            
-
 
             square = grid.coords(chess_coords)
             
             pygame.draw.rect(screen, square.color, [coords[0], coords[1], self.square_size, self.square_size],0)
+
+
+
+            
+            if chess_coords in current_possible_move_coords:
+                pygame.draw.circle(screen, BLUE, (coords[0] + BLUE_DOT_OFFSET, coords[1] + BLUE_DOT_OFFSET), 10, 10)
             
             if square.contains_piece:
-                screen.blit(FONT.render(square.piece.piece_identifier, True, BLACK), coords)
+                # screen.blit(FONT.render(square.piece.piece_identifier, True, BLACK), coords)
+                screen.blit(MAIN_PIECE_IMAGE_DICT[square.piece.piece_identifier], coords)
 
 
 pygame.display.set_caption("Easy Chess: White Turn")
@@ -99,6 +124,41 @@ running = True
 clock = pygame.time.Clock() 
 selected = None
 current_possible_moves = set()
+
+
+FOLDER_NAME = 'assets'
+
+BB_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'black_bishop.png'))
+BK_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'black_king.png'))
+BKN_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'black_knight.png'))
+BP_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'black_pawn.png'))
+BQ_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'black_queen.png'))
+BR_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'black_rook.png'))
+
+WB_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'white_bishop.png'))
+WK_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'white_king.png'))
+WKN_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'white_knight.png'))
+WP_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'white_pawn.png'))
+WQ_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'white_queen.png'))
+WR_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'white_rook.png'))
+
+
+MAIN_PIECE_IMAGE_DICT = {'BB': pygame.transform.scale(BB_IMAGE, SQUARE_DIMENSIONS),
+                         'BK': pygame.transform.scale(BK_IMAGE, SQUARE_DIMENSIONS),
+                         'BKn': pygame.transform.scale(BKN_IMAGE, SQUARE_DIMENSIONS),
+                         'BP': pygame.transform.scale(BP_IMAGE, SQUARE_DIMENSIONS),
+                         'BQ': pygame.transform.scale(BQ_IMAGE, SQUARE_DIMENSIONS),
+                         'BR': pygame.transform.scale(BR_IMAGE, SQUARE_DIMENSIONS),
+
+                         'WB': pygame.transform.scale(WB_IMAGE, SQUARE_DIMENSIONS),
+                         'WK': pygame.transform.scale(WK_IMAGE, SQUARE_DIMENSIONS),
+                         'WKn': pygame.transform.scale(WKN_IMAGE, SQUARE_DIMENSIONS),
+                         'WP': pygame.transform.scale(WP_IMAGE, SQUARE_DIMENSIONS),
+                         'WQ': pygame.transform.scale(WQ_IMAGE, SQUARE_DIMENSIONS),
+                         'WR': pygame.transform.scale(WR_IMAGE, SQUARE_DIMENSIONS)}
+
+
+
 
 while running:
 
@@ -160,6 +220,10 @@ while running:
     screen.fill(WHITE)
 
     pygame_chess_grid.render_grid(screen, grid.current_turn)
+
+    # screen.blit(FONT.render(square.piece.piece_identifier, True, BLACK), coords)
+
+    
 
 
  

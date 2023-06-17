@@ -105,7 +105,8 @@ class Square:
             pass
 
     def is_possible_move(self):
-        self.color = BLUE
+        # self.color = BLUE
+        pass
 
     def back_to_default_color(self):
         self.color = self.default_color
@@ -180,7 +181,7 @@ class Piece:
             piece_type = piece_type[0].upper() + piece_type[1:]
             
         self.piece_identifier = self.color.upper() + piece_type
-        self.piece_identifier = self.piece_identifier.zfill(4).replace('0', ' ')
+
 
         self.pieces = []
 
@@ -198,7 +199,6 @@ class Piece:
 
 
     def die(self):
-        print (f'{self} died')
         self.pieces.remove(self)
 
 
@@ -211,7 +211,7 @@ class Piece:
         target_square = new_grid.coords(new_pos)
 
         if target_square.contains_piece:
-            print ('attempting to kill piece')
+
             
             target_square.piece.die()
             target_square.update_piece(self)
@@ -228,7 +228,7 @@ class Piece:
         return self.color==color
 
     def __str__(self):
-        return self.piece_identifier
+        return self.piece_identifier.zfill(4).replace('0', ' ')
     
     def valid_move(self,
                    grid,
@@ -393,6 +393,28 @@ class King(Piece):
         super().__init__(grid, color, pos, 'k')
         grid.king_pos[color] = pos
 
+    def move(self,
+             new_grid:Grid,
+             new_pos:tuple):
+
+        new_grid.coords(self.pos).update_piece(None)
+        
+        target_square = new_grid.coords(new_pos)
+
+        if target_square.contains_piece:
+            
+            
+            target_square.piece.die()
+            target_square.update_piece(self)
+        else:
+            target_square.update_piece(self)
+        
+        self.pos = new_pos
+        self.has_moved = True
+        new_grid.change_current_turn()
+        new_grid.king_pos[self.color] = new_pos
+        return new_grid
+
     def get_moves(self, grid) -> set:
         
         moves = []
@@ -441,6 +463,8 @@ def init_board(grid):
 
 grid = Grid()
 init_board(grid)
+
+
 
 # #x = Rook('w', (4, 1))
 # #y = Pawn('w', (5, 1))
