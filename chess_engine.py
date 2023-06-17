@@ -198,7 +198,6 @@ class Piece:
 
 
     def die(self):
-        print (f'{self} died')
         self.pieces.remove(self)
 
 
@@ -211,7 +210,7 @@ class Piece:
         target_square = new_grid.coords(new_pos)
 
         if target_square.contains_piece:
-            print ('attempting to kill piece')
+
             
             target_square.piece.die()
             target_square.update_piece(self)
@@ -392,6 +391,28 @@ class King(Piece):
     def __init__(self, grid, color:str, pos:tuple):
         super().__init__(grid, color, pos, 'k')
         grid.king_pos[color] = pos
+
+    def move(self,
+             new_grid:Grid,
+             new_pos:tuple):
+
+        new_grid.coords(self.pos).update_piece(None)
+        
+        target_square = new_grid.coords(new_pos)
+
+        if target_square.contains_piece:
+            
+            
+            target_square.piece.die()
+            target_square.update_piece(self)
+        else:
+            target_square.update_piece(self)
+        
+        self.pos = new_pos
+        self.has_moved = True
+        new_grid.change_current_turn()
+        new_grid.king_pos[self.color] = new_pos
+        return new_grid
 
     def get_moves(self, grid) -> set:
         

@@ -27,6 +27,12 @@ def back_to_default(selected_sqaure:Square, possible_moves:tuple):
 pygame.init()
 FONT = pygame.font.SysFont(None, 24)
 
+def display_check(screen:pygame.surface.Surface, color=RED):
+    screen.blit(FONT.render("Check", False, color), (WIDTH//2 - 40, 20))
+
+def display_checkmate(screen:pygame.surface.Surface, color=RED):
+    pass
+
 class Pygame_Chess_Grid:
     def __init__(self, pos:tuple, size:float):
         self.pos = pos
@@ -160,6 +166,9 @@ while running:
     screen.fill(WHITE)
 
     pygame_chess_grid.render_grid(screen, grid.current_turn)
+    # screen.blit(FONT.render(square.piece.piece_identifier, True, BLACK), coords)
+
+    
 
 
  
