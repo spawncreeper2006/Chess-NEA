@@ -46,22 +46,18 @@ def does_not_endanger_king(piece, grid, pos) -> bool:
     possible_grid.white_pieces = grid.white_pieces.copy()
 
     possible_grid.black_pieces = grid.black_pieces.copy()
-    
     piece_position = piece.pos
-    # del piece
     piece = possible_grid.coords(piece_position).piece
     possible_grid = piece.move(possible_grid, pos)
+    
+    
 
 
     enemy_attack_moves = get_team_attack_moves(possible_grid.current_turn, possible_grid)
-
-
-    if not possible_grid.king_pos[piece.color] in enemy_attack_moves:
+    
+    return not possible_grid.king_pos[possible_grid.current_turn] in enemy_attack_moves
         
-        return True
-    else:
-        
-        return False
+
 
 def add_coords(c1:tuple,
                c2:tuple) -> tuple:
@@ -77,6 +73,19 @@ def other_team(team:str) -> str:
         case 'b':
             return 'w'
         
+def king_in_check(grid):
+    if grid.king_pos[grid.current_turn] in get_team_attack_moves(other_team(grid.current_turn), grid):
+        match grid.current_turn:
+            case 'w':
+                grid.white_checked = True
+            case 'b':
+                grid.black_checked = True
+
+    else:
+        grid.white_checked = False
+        grid.black_checked = False
+
+
 class Square:
     def __init__(self, color:tuple):
         self.contains_piece = False
@@ -221,6 +230,9 @@ class Piece:
         self.pos = new_pos
         self.has_moved = True
         new_grid.change_current_turn()
+
+        king_in_check(grid)
+
         return new_grid
 
     def same_color(self,
@@ -413,6 +425,8 @@ class King(Piece):
         self.has_moved = True
         new_grid.change_current_turn()
         new_grid.king_pos[self.color] = new_pos
+
+        king_in_check(grid)
         return new_grid
 
     def get_moves(self, grid) -> set:

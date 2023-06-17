@@ -1,6 +1,7 @@
 import pygame
 from chess_engine import *
 import os
+import warnings
 
 pygame.init()
 
@@ -41,7 +42,9 @@ def display_check(screen:pygame.surface.Surface, color=RED):
     screen.blit(FONT.render("Check", False, color), (WIDTH//2 - 40, 20))
 
 def display_checkmate(screen:pygame.surface.Surface, color=RED):
-    pass
+    screen.blit(FONT.render("Checkmate", False, color), (WIDTH//2 - 40, 20))
+
+
 
 current_possible_move_coords = []
 
@@ -67,9 +70,6 @@ class Pygame_Chess_Grid:
     def handle_click(self, click_pos:tuple):
         
         coords = self.screen_to_chess_coords(click_pos)
-
-
-        
 
         if in_grid(coords):
             return coords
@@ -105,14 +105,13 @@ class Pygame_Chess_Grid:
             pygame.draw.rect(screen, square.color, [coords[0], coords[1], self.square_size, self.square_size],0)
 
 
-
-            
-            if chess_coords in current_possible_move_coords:
-                pygame.draw.circle(screen, BLUE, (coords[0] + BLUE_DOT_OFFSET, coords[1] + BLUE_DOT_OFFSET), 10, 10)
-            
             if square.contains_piece:
                 # screen.blit(FONT.render(square.piece.piece_identifier, True, BLACK), coords)
                 screen.blit(MAIN_PIECE_IMAGE_DICT[square.piece.piece_identifier], coords)
+
+            if chess_coords in current_possible_move_coords:
+                pygame.draw.circle(screen, BLUE, (coords[0] + BLUE_DOT_OFFSET, coords[1] + BLUE_DOT_OFFSET), 10, 10)
+    
 
 
 pygame.display.set_caption("Easy Chess: White Turn")
@@ -127,6 +126,8 @@ current_possible_moves = set()
 
 
 FOLDER_NAME = 'assets'
+
+
 
 BB_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'black_bishop.png'))
 BK_IMAGE = pygame.image.load(os.path.join(FOLDER_NAME, 'black_king.png'))
@@ -166,13 +167,14 @@ while running:
         if event.type == pygame.QUIT:
               running = False
 
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN: #MOUSE CLICK ACTIONS
             pos = pygame.mouse.get_pos()
             coords = pygame_chess_grid.handle_click(pos)
             if coords != None:
 
                 this_square = grid.coords(coords)
-                if this_square.contains_piece and this_square.piece.color == grid.current_turn:
+
+                if this_square.contains_piece and this_square.piece.color == grid.current_turn: #SELECTING PIECE
                 
 
                     this_square.clicked()
@@ -199,16 +201,23 @@ while running:
                         square.is_possible_move()
                         current_possible_moves.append(square)
                         
-                elif this_square in current_possible_moves:
+                elif this_square in current_possible_moves: #MOVING
                     selected.piece.move(grid, coords)
                     back_to_default(selected, current_possible_moves)
                     selected = None
-                    current_possible_moves = set()
+                    current_spossible_moves = set()
                     match grid.current_turn:
                         case "w":
                             pygame.display.set_caption("Easy Chess: White Turn")
                         case "b":
                             pygame.display.set_caption("Easy Chess: Black Turn")
+
+                    
+                    
+                    current_possible_moves = []
+                    current_possible_move_coords = []
+
+                    
                     
 
                 elif selected != None:
@@ -218,12 +227,12 @@ while running:
                     current_possible_moves = set()
  
     screen.fill(WHITE)
-
     pygame_chess_grid.render_grid(screen, grid.current_turn)
 
-    # screen.blit(FONT.render(square.piece.piece_identifier, True, BLACK), coords)
+    if grid.white_checked or grid.black_checked:
+        display_check(screen)
 
-    
+
 
 
  
