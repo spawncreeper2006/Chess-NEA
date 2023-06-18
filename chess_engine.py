@@ -16,6 +16,7 @@ sep = lambda: print(SEP)
 
 
 
+
 def in_grid(pos:tuple) -> bool:
     for xy in pos:
         if xy < 1 or xy > 8:
@@ -43,9 +44,6 @@ def get_team_attack_moves(team:str, this_grid) -> set:
 def does_not_endanger_king(piece, grid, pos) -> bool:
     possible_grid = deepcopy(grid)
     
-    # possible_grid.white_pieces = grid.white_pieces.copy()
-
-    # possible_grid.black_pieces = grid.black_pieces.copy()
     piece_position = piece.pos
     piece = possible_grid.coords(piece_position).piece
     possible_grid = piece.move(possible_grid, pos)
@@ -137,6 +135,8 @@ class Grid:
         self.winner = ''
         self.white_pieces = []
         self.black_pieces = []
+        self.taken_white_pieces = []
+        self.taken_black_pieces = []
         self.king_pos = {}
 
 
@@ -208,8 +208,35 @@ class Piece:
 
 
 
-    def die(self):
+    def die(self, new_grid:Grid):
         self.pieces.remove(self)
+        pieces = []
+        team = ''
+        match self.color:
+            case 'w':
+                pieces = new_grid.taken_white_pieces
+                team = 'W'
+            case 'b':
+                pieces = new_grid.taken_black_pieces
+                team = 'B'
+
+        match self.piece_identifier[1:]:
+            case 'P':
+                pieces.insert(0, self.piece_identifier)
+            case 'B':
+                pieces.insert(pieces.count(team + 'P'), self.piece_identifier)
+            case 'Kn':
+                pieces.insert(pieces.count(team + 'P') + pieces.count(team + 'B'), self.piece_identifier)
+            case 'R':
+                pieces.insert(pieces.count(team + 'P') + pieces.count(team + 'B') + pieces.count(team + 'Kn'), self.piece_identifier)
+            case 'Q':
+                pieces.insert(pieces.count(team + 'P') + pieces.count(team + 'B') + pieces.count(team + 'Kn') + pieces.count(team + 'R'), self.piece_identifier)
+            case _:
+                raise Exception('could not find piece')
+        
+
+
+        
 
 
     def move(self,
@@ -223,7 +250,7 @@ class Piece:
         if target_square.contains_piece:
 
             
-            target_square.piece.die()
+            target_square.piece.die(new_grid)
             target_square.update_piece(self)
         else:
             target_square.update_piece(self)
@@ -417,7 +444,7 @@ class King(Piece):
         if target_square.contains_piece:
             
             
-            target_square.piece.die()
+            target_square.piece.die(new_grid)
             target_square.update_piece(self)
         else:
             target_square.update_piece(self)

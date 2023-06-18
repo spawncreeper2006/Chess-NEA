@@ -44,6 +44,9 @@ def display_check(screen:pygame.surface.Surface, color=RED):
 def display_checkmate(screen:pygame.surface.Surface, color=RED):
     screen.blit(FONT.render("Checkmate", False, color), (WIDTH//2 - 40, 20))
 
+#order goes: Pawn, Bishop, Knight, Rook, Queen
+
+
 
 
 current_possible_move_coords = []
@@ -158,6 +161,12 @@ MOVE_SOUND = pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'moving_piece.wav'))
 CHECK_SOUND = pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'check.wav'))
 
 
+def render_taken_piece_log(piece_list):
+
+    for piece in piece_list:
+        print (piece)
+
+
 while running:
 
     for event in pygame.event.get():
@@ -209,6 +218,7 @@ while running:
                         case "b":
                             pygame.display.set_caption("Easy Chess: Black Turn")
 
+
                     
                     
                     current_possible_moves = []
@@ -231,6 +241,7 @@ while running:
  
     screen.fill(WHITE)
     pygame_chess_grid.render_grid(screen, grid.current_turn)
+    render_taken_piece_log(grid.taken_white_pieces)
 
     if grid.white_checked or grid.black_checked:
         display_check(screen)
