@@ -15,13 +15,14 @@ HEIGHT = 600
 SQUARE_SIDE = WIDTH / 8
 
 SQUARE_DIMENSIONS = (SQUARE_SIDE - 25, SQUARE_SIDE - 25)
+ICON_IMAGE_DIMENSIONS = (30, 30)
 
 GRID_OUTLINE_COLOR = (66, 34, 25)
 GRID_OUTLINE = 30
 MAIN_PIECE_IMAGE_DICT = {}
 FONT = pygame.font.SysFont(None, 24)
 BLUE_DOT_OFFSET = 25
-
+ICON_SPACING = 30
 
 
 
@@ -157,14 +158,32 @@ MAIN_PIECE_IMAGE_DICT = {'BB': pygame.transform.scale(BB_IMAGE, SQUARE_DIMENSION
                          'WQ': pygame.transform.scale(WQ_IMAGE, SQUARE_DIMENSIONS),
                          'WR': pygame.transform.scale(WR_IMAGE, SQUARE_DIMENSIONS)}
 
+ICON_PIECE_IMAGE_DICT = {'BB': pygame.transform.scale(BB_IMAGE, ICON_IMAGE_DIMENSIONS),
+                         'BK': pygame.transform.scale(BK_IMAGE, ICON_IMAGE_DIMENSIONS),
+                         'BKn': pygame.transform.scale(BKN_IMAGE, ICON_IMAGE_DIMENSIONS),
+                         'BP': pygame.transform.scale(BP_IMAGE, ICON_IMAGE_DIMENSIONS),
+                         'BQ': pygame.transform.scale(BQ_IMAGE, ICON_IMAGE_DIMENSIONS),
+                         'BR': pygame.transform.scale(BR_IMAGE, ICON_IMAGE_DIMENSIONS),
+
+                         'WB': pygame.transform.scale(WB_IMAGE, ICON_IMAGE_DIMENSIONS),
+                         'WK': pygame.transform.scale(WK_IMAGE, ICON_IMAGE_DIMENSIONS),
+                         'WKn': pygame.transform.scale(WKN_IMAGE, ICON_IMAGE_DIMENSIONS),
+                         'WP': pygame.transform.scale(WP_IMAGE, ICON_IMAGE_DIMENSIONS),
+                         'WQ': pygame.transform.scale(WQ_IMAGE, ICON_IMAGE_DIMENSIONS),
+                         'WR': pygame.transform.scale(WR_IMAGE, ICON_IMAGE_DIMENSIONS)}
+
 MOVE_SOUND = pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'moving_piece.wav'))
 CHECK_SOUND = pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'check.wav'))
 
 
-def render_taken_piece_log(piece_list):
+def render_taken_piece_log(screen:pygame.surface.Surface, piece_list:list, starting_coords:tuple):
 
+    coords = starting_coords
     for piece in piece_list:
-        print (piece)
+        screen.blit(ICON_PIECE_IMAGE_DICT[piece], coords)
+        coords = add_coords(coords, (ICON_SPACING, 0))
+
+        
 
 
 while running:
@@ -241,7 +260,19 @@ while running:
  
     screen.fill(WHITE)
     pygame_chess_grid.render_grid(screen, grid.current_turn)
-    render_taken_piece_log(grid.taken_white_pieces)
+
+    match grid.current_turn:
+        case 'w':
+            render_taken_piece_log(screen, grid.taken_white_pieces, (100, 20))
+            render_taken_piece_log(screen, grid.taken_black_pieces, (100, HEIGHT - 50))
+
+        case 'b':
+            render_taken_piece_log(screen, grid.taken_black_pieces, (100, 20))
+            render_taken_piece_log(screen, grid.taken_white_pieces, (100, HEIGHT - 50))
+
+        
+
+    
 
     if grid.white_checked or grid.black_checked:
         display_check(screen)
