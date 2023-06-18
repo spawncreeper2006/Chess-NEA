@@ -21,6 +21,7 @@ GRID_OUTLINE_COLOR = (66, 34, 25)
 GRID_OUTLINE = 30
 MAIN_PIECE_IMAGE_DICT = {}
 FONT = pygame.font.SysFont(None, 24)
+BIG_FONT = pygame.font.SysFont(None, 35)
 BLUE_DOT_OFFSET = 25
 ICON_SPACING = 30
 
@@ -40,10 +41,11 @@ def back_to_default(selected_sqaure:Square, possible_moves:tuple):
 
 
 def display_check(screen:pygame.surface.Surface, color=RED):
-    screen.blit(FONT.render("Check", False, color), (WIDTH//2 - 40, 20))
+    screen.blit(BIG_FONT.render("Check", False, color), (WIDTH//2 - 40, 0))
 
 def display_checkmate(screen:pygame.surface.Surface, color=RED):
-    screen.blit(FONT.render("Checkmate", False, color), (WIDTH//2 - 40, 20))
+    screen.blit(BIG_FONT.render("Checkmate", False, color), (WIDTH//2 - 40, 0))
+
 
 #order goes: Pawn, Bishop, Knight, Rook, Queen
 
@@ -237,6 +239,8 @@ while running:
                         case "b":
                             pygame.display.set_caption("Easy Chess: Black Turn")
 
+                    print (can_move(grid))
+
 
                     
                     
@@ -263,11 +267,11 @@ while running:
 
     match grid.current_turn:
         case 'w':
-            render_taken_piece_log(screen, grid.taken_white_pieces, (100, 20))
+            render_taken_piece_log(screen, grid.taken_white_pieces, (100, 30))
             render_taken_piece_log(screen, grid.taken_black_pieces, (100, HEIGHT - 50))
 
         case 'b':
-            render_taken_piece_log(screen, grid.taken_black_pieces, (100, 20))
+            render_taken_piece_log(screen, grid.taken_black_pieces, (100, 30))
             render_taken_piece_log(screen, grid.taken_white_pieces, (100, HEIGHT - 50))
 
         

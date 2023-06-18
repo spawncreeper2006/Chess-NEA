@@ -24,6 +24,20 @@ def in_grid(pos:tuple) -> bool:
 
     return True
 
+def get_team_moves(team:str, this_grid):
+    moves = []
+    team_pieces = []
+    match team:
+        case 'w':
+            team_pieces = this_grid.white_pieces
+        case 'b':
+            team_pieces = this_grid.black_pieces
+
+    for piece in team_pieces:
+        moves = piece.get_moves(this_grid)
+        for move in moves:
+            yield (piece, move)
+
 def get_team_attack_moves(team:str, this_grid) -> set:
     
     moves = []
@@ -48,9 +62,6 @@ def does_not_endanger_king(piece, grid, pos) -> bool:
     piece = possible_grid.coords(piece_position).piece
     possible_grid = piece.move(possible_grid, pos)
     
-    
-
-
     enemy_attack_moves = get_team_attack_moves(possible_grid.current_turn, possible_grid)
     
     return not possible_grid.king_pos[other_team(possible_grid.current_turn)] in enemy_attack_moves
@@ -62,7 +73,7 @@ def add_coords(c1:tuple,
     if len(c1) != len(c2):
         raise Exception(f'Unable to add tuples with length {len(c1)} and length {len(c2)}')
     
-    return tuple([a + b for a , b in zip(c1, c2)])
+    return tuple([a + b for a, b in zip(c1, c2)])
 
 def other_team(team:str) -> str:
     match team:
@@ -76,13 +87,24 @@ def king_in_check(grid):
         match grid.current_turn:
             case 'w':
                 grid.white_checked = True
+                
             case 'b':
                 grid.black_checked = True
+
+        return True
 
     else:
         grid.white_checked = False
         grid.black_checked = False
 
+    return False
+
+def can_move(grid):
+    for (piece, move) in get_team_moves(grid.current_turn, grid):
+        if does_not_endanger_king(piece, grid, move):
+            return True
+        
+    return False
 
 class Square:
     def __init__(self, color:tuple):
@@ -132,7 +154,7 @@ class Grid:
         self.current_turn = 'w'
         self.white_checked = False
         self.black_checked = False
-        self.winner = ''
+        self.win_state = ''
         self.white_pieces = []
         self.black_pieces = []
         self.taken_white_pieces = []
@@ -259,7 +281,18 @@ class Piece:
         self.has_moved = True
         new_grid.change_current_turn()
 
-        king_in_check(grid)
+        in_check = king_in_check(new_grid)
+        cannot_move = can_move(new_grid)
+
+        if cannot_move:
+
+            if in_check:
+                grid.win_state = other_team(new_grid.current_turn)
+
+            else:
+                grid.win_state = 'd'
+
+
 
         return new_grid
 
