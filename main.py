@@ -229,7 +229,7 @@ while running:
                         current_possible_moves.append(square)
                         
                 elif this_square in current_possible_moves: #MOVING
-                    selected.piece.move(grid, coords)
+                    selected.piece.move(grid, coords, True)
                     back_to_default(selected, current_possible_moves)
                     selected = None
                     current_spossible_moves = set()
@@ -239,10 +239,6 @@ while running:
                         case "b":
                             pygame.display.set_caption("Easy Chess: Black Turn")
 
-                    print (can_move(grid))
-
-
-                    
                     
                     current_possible_moves = []
                     current_possible_move_coords = []
@@ -276,17 +272,20 @@ while running:
 
         
 
-    
+    if grid.win_state != '':
 
-    if grid.white_checked or grid.black_checked:
+        match grid.win_state:
+            case 'w':
+                display_checkmate(screen)
+            case 'b':
+                display_checkmate(screen)
+            case 'd':
+                raise NotImplementedError
+
+    elif grid.white_checked or grid.black_checked:
         display_check(screen)
 
 
-
-
-
-
- 
  
     pygame.display.flip()
      

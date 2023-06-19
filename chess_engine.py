@@ -263,7 +263,8 @@ class Piece:
 
     def move(self,
              new_grid:Grid,
-             new_pos:tuple):
+             new_pos:tuple,
+             check_for_win=False):
 
         new_grid.coords(self.pos).update_piece(None)
         
@@ -282,15 +283,18 @@ class Piece:
         new_grid.change_current_turn()
 
         in_check = king_in_check(new_grid)
-        cannot_move = can_move(new_grid)
+        if check_for_win:
 
-        if cannot_move:
+            cm = can_move(new_grid)
 
-            if in_check:
-                grid.win_state = other_team(new_grid.current_turn)
 
-            else:
-                grid.win_state = 'd'
+            if not cm:
+
+                if in_check:
+                    grid.win_state = other_team(new_grid.current_turn)
+
+                else:
+                    grid.win_state = 'd'
 
 
 
@@ -468,7 +472,8 @@ class King(Piece):
 
     def move(self,
              new_grid:Grid,
-             new_pos:tuple):
+             new_pos:tuple,
+             check_for_win=False):
 
         new_grid.coords(self.pos).update_piece(None)
         
@@ -487,7 +492,18 @@ class King(Piece):
         new_grid.change_current_turn()
         new_grid.king_pos[self.color] = new_pos
 
-        king_in_check(grid)
+        in_check = king_in_check(new_grid)
+        if check_for_win:
+            cm = can_move(new_grid)
+
+
+            if not cm:
+
+                if in_check:
+                    grid.win_state = other_team(new_grid.current_turn)
+
+                else:
+                    grid.win_state = 'd'
         return new_grid
 
     def get_moves(self, grid) -> set:
@@ -540,13 +556,3 @@ grid = Grid()
 init_board(grid)
 
 
-
-# #x = Rook('w', (4, 1))
-# #y = Pawn('w', (5, 1))
-
-
-
-# #print (y.get_possible_attack_moves())
-# print (grid.coords((1, 2)).piece.get_moves())
-# grid.coords((1, 2)).piece.move((1, 3))
-# print (grid.coords((1,3)).piece.get_moves())
