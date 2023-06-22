@@ -1,9 +1,20 @@
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 from chess_engine import *
-import os
 import random
 
 pygame.init()
+
+try:
+    pygame.mixer.init()
+except pygame.error:
+    has_audio = False
+else:
+    has_audio = True
+
+
+
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -47,7 +58,6 @@ def display_checkmate(screen:pygame.surface.Surface, color=RED):
     screen.blit(BIG_FONT.render("Checkmate", False, color), (WIDTH//2 - 40, 0))
 
 
-#order goes: Pawn, Bishop, Knight, Rook, Queen
 
 
 
@@ -110,7 +120,7 @@ class Pygame_Chess_Grid:
 
 
             if square.contains_piece:
-                # screen.blit(FONT.render(square.piece.piece_identifier, True, BLACK), coords)
+
                 screen.blit(MAIN_PIECE_IMAGE_DICT[square.piece.piece_identifier], coords)
 
             if chess_coords in current_possible_move_coords:
@@ -174,22 +184,25 @@ ICON_PIECE_IMAGE_DICT = {'BB': pygame.transform.scale(BB_IMAGE, ICON_IMAGE_DIMEN
                          'WQ': pygame.transform.scale(WQ_IMAGE, ICON_IMAGE_DIMENSIONS),
                          'WR': pygame.transform.scale(WR_IMAGE, ICON_IMAGE_DIMENSIONS)}
 
-MOVE_SOUND = pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'moving_piece.wav'))
-CHECK_SOUND = pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'check.wav'))
 
-CHESS_SOUND_DICT = {'B': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Bishop.wav')),
-                    'K': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'King.wav')),
-                    'Kn': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Knight.wav')),
-                    'P': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Pawn.wav')),
-                    'Q': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Queen.wav')),
-                    'R': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Rook.wav'))}
+if has_audio:
 
-CHESS_SOUND_DICT_2 = {'B': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Bishop 2.wav')),
-                    'K': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'King 2.wav')),
-                    'Kn': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Knight 2.wav')),
-                    'P': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Pawn 2.wav')),
-                    'Q': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Queen 2.wav')),
-                    'R': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Rook 2.wav'))}
+    CHESS_SOUND_DICT = {'B': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Bishop.wav')),
+                        'K': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'King.wav')),
+                        'Kn': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Knight.wav')),
+                        'P': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Pawn.wav')),
+                        'Q': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Queen.wav')),
+                        'R': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Rook.wav'))}
+
+    CHESS_SOUND_DICT_2 = {'B': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Bishop 2.wav')),
+                        'K': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'King 2.wav')),
+                        'Kn': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Knight 2.wav')),
+                        'P': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Pawn 2.wav')),
+                        'Q': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Queen 2.wav')),
+                        'R': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Rook 2.wav'))}
+
+
+
 
 def render_taken_piece_log(screen:pygame.surface.Surface, piece_list:list, starting_coords:tuple):
 
@@ -256,20 +269,15 @@ while running:
                     current_possible_moves = []
                     current_possible_move_coords = []
 
-                    piece = this_square.piece
-                    pieceID = piece.piece_identifier[1:]
+                    if has_audio:
 
-                    if random.randint(0,1) == 1:
-                        pygame.mixer.Sound.play(CHESS_SOUND_DICT[pieceID])
-                    else:
-                        pygame.mixer.Sound.play(CHESS_SOUND_DICT_2[pieceID])
+                        piece = this_square.piece
+                        pieceID = piece.piece_identifier[1:]
 
-
-                    # if grid.white_checked or grid.black_checked:
-                    #     pygame.mixer.Sound.play(CHECK_SOUND)
-                    # else:
-                    #     pygame.mixer.Sound.play(MOVE_SOUND)
-
+                        if random.randint(0,1) == 1:
+                            pygame.mixer.Sound.play(CHESS_SOUND_DICT[pieceID])
+                        else:
+                            pygame.mixer.Sound.play(CHESS_SOUND_DICT_2[pieceID])
                     
                     
 
