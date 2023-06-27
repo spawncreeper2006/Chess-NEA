@@ -187,6 +187,9 @@ class Grid:
                            pos:tuple) -> bool:
         return self.coords(pos).contains_piece
     
+    def ask_for_promotion(self):
+        return Queen
+    
 
     
     def __str__(self):
@@ -264,26 +267,28 @@ class Piece:
     def move(self,
              new_grid:Grid,
              new_pos:tuple,
-             check_for_win=False):
+             is_simulated=False):
 
         new_grid.coords(self.pos).update_piece(None)
         
         target_square = new_grid.coords(new_pos)
 
-        if target_square.contains_piece:
+        if target_square.contains_piece: #killing a piece
 
             
             target_square.piece.die(new_grid)
             target_square.update_piece(self)
         else:
             target_square.update_piece(self)
+
+        
         
         self.pos = new_pos
         self.has_moved = True
         new_grid.change_current_turn()
 
         in_check = king_in_check(new_grid)
-        if check_for_win:
+        if is_simulated:
 
             cm = can_move(new_grid)
 
@@ -295,6 +300,28 @@ class Piece:
 
                 else:
                     grid.win_state = 'd'
+
+        
+        if self.piece_identifier[1] == 'P' and is_simulated: #it is a pawn
+
+            to_promote = False
+            
+            match self.color:
+                case 'w':
+                     if self.pos[1] == 8:
+                         to_promote = True
+                         new_piece = new_grid.ask_for_promotion()
+                         new_grid.white_pieces.remove(self)
+                         team = 'w'
+                case 'b':
+                    if self.pos[1] == 1:
+                        to_promote = True
+                        new_piece = new_grid.ask_for_promotion()
+                        new_grid.black_pieces.remove(self)
+                        team = 'b'
+
+            if to_promote:
+                new_piece(new_grid, team, self.pos)
 
 
 
@@ -473,7 +500,7 @@ class King(Piece):
     def move(self,
              new_grid:Grid,
              new_pos:tuple,
-             check_for_win=False):
+             is_simulated=False):
 
         new_grid.coords(self.pos).update_piece(None)
         
@@ -493,7 +520,7 @@ class King(Piece):
         new_grid.king_pos[self.color] = new_pos
 
         in_check = king_in_check(new_grid)
-        if check_for_win:
+        if is_simulated:
             cm = can_move(new_grid)
 
 

@@ -4,6 +4,45 @@ import pygame
 from chess_engine import *
 import random
 
+from tkinter import *   
+
+
+def promote_pawn_UI(*args) -> int:
+    pieces = [Queen, Rook, Bishop, Knight]
+    root = Tk()
+    WIDTH = 200
+    HEIGHT = 200
+    root.geometry(f'{WIDTH}x{HEIGHT}')
+    root.resizable(False, False)
+    root.eval('tk::PlaceWindow . center')
+
+
+
+    lbl = Label(root, text = 'What do you want to promote to?')
+    lbl.place(x=0, y=0)
+
+
+    var = IntVar()
+    r1 = Radiobutton(root, text="Queen", variable=var, value=0)
+    r1.place(x=0, y=50)
+
+    r2 = Radiobutton(root, text="Rook", variable=var, value=1)
+    r2.place(x=0, y=80)
+
+    r3 = Radiobutton(root, text="Bishop", variable=var, value=2)
+    r3.place(x=0, y=110)
+
+    r4 = Radiobutton(root, text="Knight", variable=var, value=3)
+    r4.place(x=0, y=140)
+
+    btn = Button(root, text = '  OK  ', command = root.destroy)
+    btn.place(x=145, y=160)
+    root.mainloop()
+
+    return pieces[var.get()]
+
+grid.ask_for_promotion = promote_pawn_UI
+
 pygame.init()
 
 try:
