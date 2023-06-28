@@ -506,6 +506,24 @@ class King(Piece):
         
         target_square = new_grid.coords(new_pos)
 
+        if not self.has_moved:
+            match new_pos[0]:
+                case 3:
+                    y = new_pos[1]
+                    square = new_grid.coords((1, y))
+                    rook = square.piece
+                    square.update_piece(None)
+                    new_grid.coords((4, y)).update_piece(rook)
+
+
+                case 7:
+                    y = new_pos[1]
+                    square = new_grid.coords((8, y))
+                    rook = square.piece
+                    square.update_piece(None)
+                    new_grid.coords((6, y)).update_piece(rook)
+
+
         if target_square.contains_piece:
             
             
@@ -533,7 +551,7 @@ class King(Piece):
                     grid.win_state = 'd'
         return new_grid
 
-    def get_moves(self, grid) -> set:
+    def get_moves(self, grid:Grid) -> set:
         
         moves = []
         for vector in KING_VECTORS:
@@ -541,6 +559,34 @@ class King(Piece):
             pos = add_coords(pos, vector)
             if self.valid_move(grid, pos):
                 moves.append(pos)
+
+        if not self.has_moved:
+
+
+            match self.color:
+                case 'w':
+                    pieces = grid.white_pieces
+                case 'b':
+                    pieces = grid.black_pieces
+
+           
+            for piece in pieces:
+                if type(piece) == Rook:
+                    
+                    if not piece.has_moved:
+                        match piece.pos[0]:
+                            case 1:
+                                if not (grid.coords((2, piece.pos[1])).contains_piece or grid.coords((3, piece.pos[1])).contains_piece or grid.coords((4, piece.pos[1])).contains_piece):
+                                    if self.valid_move(grid, (3, piece.pos[1])):
+                                        moves.append((3, piece.pos[1]))
+                            case 8:
+
+                                if not (grid.coords((6, piece.pos[1])).contains_piece or grid.coords((7, piece.pos[1])).contains_piece):
+                                    if self.valid_move(grid, (7, piece.pos[1])):
+                                        moves.append((7, piece.pos[1]))
+                            case _:
+                                raise Exception('Could not find rook')
+
 
 
         return set(moves)
@@ -581,5 +627,4 @@ def init_board(grid):
 
 grid = Grid()
 init_board(grid)
-
 

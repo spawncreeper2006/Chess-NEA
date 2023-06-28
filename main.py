@@ -164,7 +164,6 @@ class Pygame_Chess_Grid:
 
             if chess_coords in current_possible_move_coords:
                 pygame.draw.circle(screen, BLUE, (coords[0] + BLUE_DOT_OFFSET, coords[1] + BLUE_DOT_OFFSET), 10, 10)
-    
 
 
 pygame.display.set_caption("Easy Chess: White Turn")
