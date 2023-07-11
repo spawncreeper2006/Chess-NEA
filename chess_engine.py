@@ -267,7 +267,8 @@ class Piece:
     def move(self,
              new_grid:Grid,
              new_pos:tuple,
-             is_simulated=False):
+             is_simulated=False,
+             flip_board=True):
 
         new_grid.coords(self.pos).update_piece(None)
         
@@ -285,7 +286,8 @@ class Piece:
         
         self.pos = new_pos
         self.has_moved = True
-        new_grid.change_current_turn()
+        if flip_board:
+            new_grid.change_current_turn()
 
         in_check = king_in_check(new_grid)
         if is_simulated:
@@ -512,16 +514,18 @@ class King(Piece):
                     y = new_pos[1]
                     square = new_grid.coords((1, y))
                     rook = square.piece
-                    square.update_piece(None)
-                    new_grid.coords((4, y)).update_piece(rook)
+                    
+                    rook.move(new_grid, (4, y), is_simulated, False)
+                    
 
 
                 case 7:
                     y = new_pos[1]
                     square = new_grid.coords((8, y))
                     rook = square.piece
-                    square.update_piece(None)
-                    new_grid.coords((6, y)).update_piece(rook)
+                    
+                    rook.move(new_grid, (6, y), is_simulated, False)
+                    
 
 
         if target_square.contains_piece:
