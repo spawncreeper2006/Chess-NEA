@@ -3,7 +3,6 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 from chess_engine import *
 import random
-
 from tkinter import *   
 
 
@@ -293,7 +292,11 @@ while running:
                         current_possible_moves.append(square)
                         
                 elif this_square in current_possible_moves: #MOVING
+                    piece = selected.piece
                     selected.piece.move(grid, coords, True)
+                    
+
+                        
                     back_to_default(selected, current_possible_moves)
                     selected = None
                     current_spossible_moves = set()
