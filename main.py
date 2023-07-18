@@ -40,7 +40,7 @@ def promote_pawn_UI(*args) -> int:
 
     return pieces[var.get()]
 
-grid.ask_for_promotion = promote_pawn_UI
+board.ask_for_promotion = promote_pawn_UI
 
 pygame.init()
 
@@ -66,8 +66,8 @@ SQUARE_SIDE = WIDTH / 8
 SQUARE_DIMENSIONS = (SQUARE_SIDE - 25, SQUARE_SIDE - 25)
 ICON_IMAGE_DIMENSIONS = (30, 30)
 
-GRID_OUTLINE_COLOR = (66, 34, 25)
-GRID_OUTLINE = 30
+board_OUTLINE_COLOR = (66, 34, 25)
+board_OUTLINE = 30
 MAIN_PIECE_IMAGE_DICT = {}
 FONT = pygame.font.SysFont(None, 24)
 BIG_FONT = pygame.font.SysFont(None, 35)
@@ -102,7 +102,7 @@ def display_checkmate(screen:pygame.surface.Surface, color=RED):
 
 current_possible_move_coords = []
 
-class Pygame_Chess_Grid:
+class Pygame_Chess_board:
     def __init__(self, pos:tuple, size:float):
         self.pos = pos
         self.size = size
@@ -125,17 +125,17 @@ class Pygame_Chess_Grid:
         
         coords = self.screen_to_chess_coords(click_pos)
 
-        if in_grid(coords):
+        if in_board(coords):
             return coords
         else:
             return None
         
-    def render_grid(self, screen:pygame.surface.Surface, view_direction:str):
+    def render_board(self, screen:pygame.surface.Surface, view_direction:str):
 
-        pygame.draw.rect(screen, GRID_OUTLINE_COLOR, [self.pos[0] - GRID_OUTLINE, self.pos[1] - GRID_OUTLINE, 2 * GRID_OUTLINE + self.size, GRID_OUTLINE])
-        pygame.draw.rect(screen, GRID_OUTLINE_COLOR, [self.pos[0] - GRID_OUTLINE, self.pos[1] + self.size, 2 * GRID_OUTLINE + self.size, GRID_OUTLINE])
-        pygame.draw.rect(screen, GRID_OUTLINE_COLOR, [self.pos[0] - GRID_OUTLINE, self.pos[1], GRID_OUTLINE, self.size])
-        pygame.draw.rect(screen, GRID_OUTLINE_COLOR, [self.pos[0] + self.size, self.pos[1], GRID_OUTLINE, self.size])
+        pygame.draw.rect(screen, board_OUTLINE_COLOR, [self.pos[0] - board_OUTLINE, self.pos[1] - board_OUTLINE, 2 * board_OUTLINE + self.size, board_OUTLINE])
+        pygame.draw.rect(screen, board_OUTLINE_COLOR, [self.pos[0] - board_OUTLINE, self.pos[1] + self.size, 2 * board_OUTLINE + self.size, board_OUTLINE])
+        pygame.draw.rect(screen, board_OUTLINE_COLOR, [self.pos[0] - board_OUTLINE, self.pos[1], board_OUTLINE, self.size])
+        pygame.draw.rect(screen, board_OUTLINE_COLOR, [self.pos[0] + self.size, self.pos[1], board_OUTLINE, self.size])
 
         match view_direction:
             case "w":
@@ -152,7 +152,7 @@ class Pygame_Chess_Grid:
             chess_coords = self.screen_to_chess_coords(coords)
 
 
-            square = grid.coords(chess_coords)
+            square = board.coords(chess_coords)
             
             pygame.draw.rect(screen, square.color, [coords[0], coords[1], self.square_size, self.square_size],0)
 
@@ -166,7 +166,7 @@ class Pygame_Chess_Grid:
 
 
 pygame.display.set_caption("Easy Chess: White Turn")
-pygame_chess_grid = Pygame_Chess_Grid((100, 100), 400)
+pygame_chess_board = Pygame_Chess_board((100, 100), 400)
 
 size = (WIDTH, HEIGHT)
 screen = pygame.display.set_mode(size)
@@ -259,12 +259,12 @@ while running:
 
         elif event.type == pygame.MOUSEBUTTONDOWN: #MOUSE CLICK ACTIONS
             pos = pygame.mouse.get_pos()
-            coords = pygame_chess_grid.handle_click(pos)
+            coords = pygame_chess_board.handle_click(pos)
             if coords != None:
 
-                this_square = grid.coords(coords)
+                this_square = board.coords(coords)
 
-                if this_square.contains_piece and this_square.piece.color == grid.current_turn: #SELECTING PIECE
+                if this_square.contains_piece and this_square.piece.color == board.current_turn: #SELECTING PIECE
                 
 
                     this_square.clicked()
@@ -277,30 +277,30 @@ while running:
 
                     selected = this_square
                     current_possible_moves = []
-                    current_possible_move_coords = selected.piece.get_moves(grid)
+                    current_possible_move_coords = selected.piece.get_moves(board)
                     to_remove = []
                     for move in current_possible_move_coords:
-                        if not does_not_endanger_king(this_square.piece, grid, move):
+                        if not does_not_endanger_king(this_square.piece, board, move):
                             to_remove.append(move)
                     for item in to_remove:
                         current_possible_move_coords.remove(item)
                             
                     
                     for square_coords in current_possible_move_coords:
-                        square = grid.coords(square_coords)
+                        square = board.coords(square_coords)
                         square.is_possible_move()
                         current_possible_moves.append(square)
                         
                 elif this_square in current_possible_moves: #MOVING
                     piece = selected.piece
-                    selected.piece.move(grid, coords, True)
+                    selected.piece.move(board, coords, True)
                     
 
                         
                     back_to_default(selected, current_possible_moves)
                     selected = None
                     current_spossible_moves = set()
-                    match grid.current_turn:
+                    match board.current_turn:
                         case "w":
                             pygame.display.set_caption("Easy Chess: White Turn")
                         case "b":
@@ -330,22 +330,22 @@ while running:
                     current_possible_move_coords = []
  
     screen.fill(WHITE)
-    pygame_chess_grid.render_grid(screen, grid.current_turn)
+    pygame_chess_board.render_board(screen, board.current_turn)
 
-    match grid.current_turn:
+    match board.current_turn:
         case 'w':
-            render_taken_piece_log(screen, grid.taken_white_pieces, (100, 30))
-            render_taken_piece_log(screen, grid.taken_black_pieces, (100, HEIGHT - 50))
+            render_taken_piece_log(screen, board.taken_white_pieces, (100, 30))
+            render_taken_piece_log(screen, board.taken_black_pieces, (100, HEIGHT - 50))
 
         case 'b':
-            render_taken_piece_log(screen, grid.taken_black_pieces, (100, 30))
-            render_taken_piece_log(screen, grid.taken_white_pieces, (100, HEIGHT - 50))
+            render_taken_piece_log(screen, board.taken_black_pieces, (100, 30))
+            render_taken_piece_log(screen, board.taken_white_pieces, (100, HEIGHT - 50))
 
         
 
-    if grid.win_state != '':
+    if board.win_state != '':
 
-        match grid.win_state:
+        match board.win_state:
             case 'w':
                 display_checkmate(screen)
             case 'b':
@@ -353,7 +353,7 @@ while running:
             case 'd':
                 raise NotImplementedError
 
-    elif grid.white_checked or grid.black_checked:
+    elif board.white_checked or board.black_checked:
         display_check(screen)
 
 
