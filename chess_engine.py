@@ -17,54 +17,54 @@ sep = lambda: print(SEP)
 
 
 
-def in_grid(pos:tuple) -> bool:
+def in_board(pos:tuple) -> bool:
     for xy in pos:
         if xy < 1 or xy > 8:
             return False
 
     return True
 
-def get_team_moves(team:str, this_grid):
+def get_team_moves(team:str, this_board):
     moves = []
     team_pieces = []
     match team:
         case 'w':
-            team_pieces = this_grid.white_pieces
+            team_pieces = this_board.white_pieces
         case 'b':
-            team_pieces = this_grid.black_pieces
+            team_pieces = this_board.black_pieces
 
     for piece in team_pieces:
-        moves = piece.get_moves(this_grid)
+        moves = piece.get_moves(this_board)
         for move in moves:
             yield (piece, move)
 
-def get_team_attack_moves(team:str, this_grid) -> set:
+def get_team_attack_moves(team:str, this_board) -> set:
     
     moves = []
     team_pieces = []
     match team:
         case 'w':
-            team_pieces = this_grid.white_pieces
+            team_pieces = this_board.white_pieces
         case 'b':
-            team_pieces = this_grid.black_pieces
+            team_pieces = this_board.black_pieces
 
     for piece in team_pieces:
 
-        moves += piece.get_possible_attack_moves(this_grid)
+        moves += piece.get_possible_attack_moves(this_board)
 
 
     return set(moves)
 
-def does_not_endanger_king(piece, grid, pos) -> bool:
-    possible_grid = deepcopy(grid)
+def does_not_endanger_king(piece, board, pos) -> bool:
+    possible_board = deepcopy(board)
     
     piece_position = piece.pos
-    piece = possible_grid.coords(piece_position).piece
-    possible_grid = piece.move(possible_grid, pos)
+    piece = possible_board.coords(piece_position).piece
+    possible_board = piece.move(possible_board, pos)
     
-    enemy_attack_moves = get_team_attack_moves(possible_grid.current_turn, possible_grid)
+    enemy_attack_moves = get_team_attack_moves(possible_board.current_turn, possible_board)
     
-    return not possible_grid.king_pos[other_team(possible_grid.current_turn)] in enemy_attack_moves
+    return not possible_board.king_pos[other_team(possible_board.current_turn)] in enemy_attack_moves
         
 
 
@@ -82,26 +82,26 @@ def other_team(team:str) -> str:
         case 'b':
             return 'w'
         
-def king_in_check(grid):
-    if grid.king_pos[grid.current_turn] in get_team_attack_moves(other_team(grid.current_turn), grid):
-        match grid.current_turn:
+def king_in_check(board):
+    if board.king_pos[board.current_turn] in get_team_attack_moves(other_team(board.current_turn), board):
+        match board.current_turn:
             case 'w':
-                grid.white_checked = True
+                board.white_checked = True
                 
             case 'b':
-                grid.black_checked = True
+                board.black_checked = True
 
         return True
 
     else:
-        grid.white_checked = False
-        grid.black_checked = False
+        board.white_checked = False
+        board.black_checked = False
 
     return False
 
-def can_move(grid):
-    for (piece, move) in get_team_moves(grid.current_turn, grid):
-        if does_not_endanger_king(piece, grid, move):
+def can_move(board):
+    for (piece, move) in get_team_moves(board.current_turn, board):
+        if does_not_endanger_king(piece, board, move):
             return True
         
     return False
@@ -147,7 +147,7 @@ class Square:
         else:
             return ' ' * 4
 
-class Grid:
+class board:
     def __init__(self):
         self.data = []
         [self.data.append(Square(WHITE_WOOD if (i % 8 + i // 8) % 2 == 1 else BLACK_WOOD)) for i in range(64)]
@@ -173,9 +173,9 @@ class Grid:
         pos = (pos[0]-1, pos[1]-1)
         return pos[0]+pos[1]*8
 
-    def in_grid(self,
+    def in_board(self,
                 pos:tuple) -> bool:
-        return in_grid(pos)
+        return in_board(pos)
 
     
     def coords(self, 
@@ -201,13 +201,13 @@ class Grid:
 
 
 class Piece:
-    def __init__(self, grid, color:str, pos:tuple, piece_type:str):
+    def __init__(self, board, color:str, pos:tuple, piece_type:str):
 
         
 
         self.color = color
         self.pos = pos
-        grid.coords(pos).update_piece(self)
+        board.coords(pos).update_piece(self)
         self.has_moved = False
 
         if len(piece_type) == 1:
@@ -222,27 +222,27 @@ class Piece:
 
         match color:
             case 'w':
-                grid.white_pieces.append(self)
-                self.pieces = grid.white_pieces
+                board.white_pieces.append(self)
+                self.pieces = board.white_pieces
             case 'b':
-                grid.black_pieces.append(self)
-                self.pieces = grid.black_pieces
+                board.black_pieces.append(self)
+                self.pieces = board.black_pieces
 
 
         
 
 
 
-    def die(self, new_grid:Grid):
+    def die(self, new_board:board):
         self.pieces.remove(self)
         pieces = []
         team = ''
         match self.color:
             case 'w':
-                pieces = new_grid.taken_white_pieces
+                pieces = new_board.taken_white_pieces
                 team = 'W'
             case 'b':
-                pieces = new_grid.taken_black_pieces
+                pieces = new_board.taken_black_pieces
                 team = 'B'
 
         match self.piece_identifier[1:]:
@@ -265,19 +265,19 @@ class Piece:
 
 
     def move(self,
-             new_grid:Grid,
+             new_board:board,
              new_pos:tuple,
              is_simulated=False,
              flip_board=True):
 
-        new_grid.coords(self.pos).update_piece(None)
+        new_board.coords(self.pos).update_piece(None)
         
-        target_square = new_grid.coords(new_pos)
+        target_square = new_board.coords(new_pos)
 
         if target_square.contains_piece: #killing a piece
 
             
-            target_square.piece.die(new_grid)
+            target_square.piece.die(new_board)
             target_square.update_piece(self)
         else:
             target_square.update_piece(self)
@@ -287,21 +287,21 @@ class Piece:
         self.pos = new_pos
         self.has_moved = True
         if flip_board:
-            new_grid.change_current_turn()
+            new_board.change_current_turn()
 
-        in_check = king_in_check(new_grid)
+        in_check = king_in_check(new_board)
         if is_simulated:
 
-            cm = can_move(new_grid)
+            cm = can_move(new_board)
 
 
             if not cm:
 
                 if in_check:
-                    grid.win_state = other_team(new_grid.current_turn)
+                    board.win_state = other_team(new_board.current_turn)
 
                 else:
-                    grid.win_state = 'd'
+                    board.win_state = 'd'
 
         
         if self.piece_identifier[1] == 'P' and is_simulated: #it is a pawn
@@ -312,22 +312,22 @@ class Piece:
                 case 'w':
                      if self.pos[1] == 8:
                          to_promote = True
-                         new_piece = new_grid.ask_for_promotion()
-                         new_grid.white_pieces.remove(self)
+                         new_piece = new_board.ask_for_promotion()
+                         new_board.white_pieces.remove(self)
                          team = 'w'
                 case 'b':
                     if self.pos[1] == 1:
                         to_promote = True
-                        new_piece = new_grid.ask_for_promotion()
-                        new_grid.black_pieces.remove(self)
+                        new_piece = new_board.ask_for_promotion()
+                        new_board.black_pieces.remove(self)
                         team = 'b'
 
             if to_promote:
-                new_piece(new_grid, team, self.pos)
+                new_piece(new_board, team, self.pos)
 
 
 
-        return new_grid
+        return new_board
 
     def same_color(self,
                    color:str) -> bool:
@@ -337,12 +337,12 @@ class Piece:
         return self.piece_identifier.zfill(4).replace('0', ' ')
     
     def valid_move(self,
-                   grid,
+                   board,
                    pos:tuple) -> bool:
-        if not grid.in_grid(pos):
+        if not board.in_board(pos):
             return False
         
-        x = grid.coords(pos)
+        x = board.coords(pos)
 
         if x.contains_piece:
             if self.same_color(x.piece.color):
@@ -351,12 +351,12 @@ class Piece:
         return True
     
     def valid_take(self,
-                   grid, 
+                   board, 
                    pos:tuple) -> bool:
         
-        if not grid.in_grid(pos):
+        if not board.in_board(pos):
             return False
-        x = grid.coords(pos)
+        x = board.coords(pos)
 
         if x.contains_piece:
             if not self.same_color(x.piece.color):
@@ -365,203 +365,203 @@ class Piece:
         return False
 
 class Pawn(Piece):
-    def __init__(self, grid, color:str, pos:tuple):
-        super().__init__(grid, color, pos, 'p')
+    def __init__(self, board, color:str, pos:tuple):
+        super().__init__(board, color, pos, 'p')
         
         self.yvector = 1 if self.color == 'w' else -1
 
-    def get_moves(self, grid) -> set:
+    def get_moves(self, board) -> set:
         
         moves = []
         
         new_pos = (self.pos[0], self.pos[1] + self.yvector)
 
 
-        if not grid.pos_contains_piece(new_pos):
+        if not board.pos_contains_piece(new_pos):
             moves.append(new_pos)
             if not self.has_moved:
                 new_pos = (new_pos[0], new_pos[1] + self.yvector)
-                if not grid.pos_contains_piece(new_pos):
+                if not board.pos_contains_piece(new_pos):
 
                     moves.append(new_pos)
 
 
         for x in (-1, 1):
             new_pos = add_coords(self.pos, (x, self.yvector))
-            if self.valid_take(grid, new_pos):
+            if self.valid_take(board, new_pos):
                 moves.append(new_pos)
 
         return set(moves)
     
-    def get_possible_attack_moves(self, grid) -> set:
+    def get_possible_attack_moves(self, board) -> set:
         moves = []
         for x in (-1, 1):
             new_pos = add_coords(self.pos, (x, self.yvector))
-            if self.valid_move(grid, new_pos):
+            if self.valid_move(board, new_pos):
                 moves.append(new_pos)
         return set(moves)
 
 class Knight(Piece):
-    def __init__(self, grid, color:str, pos:tuple):
-        super().__init__(grid, color, pos, 'kn')
+    def __init__(self, board, color:str, pos:tuple):
+        super().__init__(board, color, pos, 'kn')
         
 
 
     
-    def get_moves(self, grid) -> set:
+    def get_moves(self, board) -> set:
         moves = []
 
         for vector in KNIGHT_VECTORS:
             new_coord = add_coords(self.pos, vector)
-            if self.valid_move(grid, new_coord):
+            if self.valid_move(board, new_coord):
                 moves.append(new_coord)
 
         return set(moves)
         
-    def get_possible_attack_moves(self, grid) -> set:
-        return self.get_moves(grid)
+    def get_possible_attack_moves(self, board) -> set:
+        return self.get_moves(board)
         
 class Rook(Piece):
-    def __init__(self, grid, color:str, pos:tuple):
-        super().__init__(grid, color, pos, 'r')
+    def __init__(self, board, color:str, pos:tuple):
+        super().__init__(board, color, pos, 'r')
 
 
-    def get_moves(self, grid) -> set:
+    def get_moves(self, board) -> set:
         moves = []
         for vector in ROOK_VECTORS:
             
             pos = self.pos
             while True:
                 pos = add_coords(pos, vector)
-                if self.valid_move(grid, pos):
+                if self.valid_move(board, pos):
                     moves.append(pos)
                 
                 else:
                     break
 
-                if grid.coords(pos).contains_piece:
+                if board.coords(pos).contains_piece:
                     break
 
         return set(moves)
     
-    def get_possible_attack_moves(self, grid) -> set:
-        return self.get_moves(grid)
+    def get_possible_attack_moves(self, board) -> set:
+        return self.get_moves(board)
 
 class Bishop(Piece):
-    def __init__(self, grid, color:str, pos:tuple):
-        super().__init__(grid, color, pos, 'b')
+    def __init__(self, board, color:str, pos:tuple):
+        super().__init__(board, color, pos, 'b')
 
-    def get_moves(self, grid) -> set:
+    def get_moves(self, board) -> set:
         moves = []
         for vector in BISHOP_VECTORS:
             
             pos = self.pos
             while True:
                 pos = add_coords(pos, vector)
-                if self.valid_move(grid, pos):
+                if self.valid_move(board, pos):
                     moves.append(pos)
                 else:
                     break
 
-                if grid.coords(pos).contains_piece:
+                if board.coords(pos).contains_piece:
                     break
 
         return set(moves)
         
-    def get_possible_attack_moves(self, grid) -> set:
-        return self.get_moves(grid)
+    def get_possible_attack_moves(self, board) -> set:
+        return self.get_moves(board)
 
 class Queen(Piece):
-    def __init__(self, grid, color:str, pos:tuple):
-        super().__init__(grid, color, pos, 'q')
+    def __init__(self, board, color:str, pos:tuple):
+        super().__init__(board, color, pos, 'q')
 
-    def get_moves(self, grid) -> set:
+    def get_moves(self, board) -> set:
         moves = []
         for vector in QUEEN_VECTORS:
             pos = self.pos
             while True:
                 pos = add_coords(pos, vector)
-                if self.valid_move(grid, pos):
+                if self.valid_move(board, pos):
                     moves.append(pos)
                 else:
                     break
 
-                if grid.coords(pos).contains_piece:
+                if board.coords(pos).contains_piece:
                     break
 
         return set(moves)
     
-    def get_possible_attack_moves(self, grid) -> set:
-        return self.get_moves(grid)
+    def get_possible_attack_moves(self, board) -> set:
+        return self.get_moves(board)
 
 class King(Piece):
-    def __init__(self, grid, color:str, pos:tuple):
-        super().__init__(grid, color, pos, 'k')
-        grid.king_pos[color] = pos
+    def __init__(self, board, color:str, pos:tuple):
+        super().__init__(board, color, pos, 'k')
+        board.king_pos[color] = pos
 
     def move(self,
-             new_grid:Grid,
+             new_board:board,
              new_pos:tuple,
              is_simulated=False):
 
-        new_grid.coords(self.pos).update_piece(None)
+        new_board.coords(self.pos).update_piece(None)
         
-        target_square = new_grid.coords(new_pos)
+        target_square = new_board.coords(new_pos)
 
         if not self.has_moved:
             match new_pos[0]:
                 case 3:
                     y = new_pos[1]
-                    square = new_grid.coords((1, y))
+                    square = new_board.coords((1, y))
                     rook = square.piece
                     
-                    rook.move(new_grid, (4, y), is_simulated, False)
+                    rook.move(new_board, (4, y), is_simulated, False)
                     
 
 
                 case 7:
                     y = new_pos[1]
-                    square = new_grid.coords((8, y))
+                    square = new_board.coords((8, y))
                     rook = square.piece
                     
-                    rook.move(new_grid, (6, y), is_simulated, False)
+                    rook.move(new_board, (6, y), is_simulated, False)
                     
 
 
         if target_square.contains_piece:
             
             
-            target_square.piece.die(new_grid)
+            target_square.piece.die(new_board)
             target_square.update_piece(self)
         else:
             target_square.update_piece(self)
         
         self.pos = new_pos
         self.has_moved = True
-        new_grid.change_current_turn()
-        new_grid.king_pos[self.color] = new_pos
+        new_board.change_current_turn()
+        new_board.king_pos[self.color] = new_pos
 
-        in_check = king_in_check(new_grid)
+        in_check = king_in_check(new_board)
         if is_simulated:
-            cm = can_move(new_grid)
+            cm = can_move(new_board)
 
 
             if not cm:
 
                 if in_check:
-                    grid.win_state = other_team(new_grid.current_turn)
+                    board.win_state = other_team(new_board.current_turn)
 
                 else:
-                    grid.win_state = 'd'
-        return new_grid
+                    board.win_state = 'd'
+        return new_board
 
-    def get_moves(self, grid:Grid) -> set:
+    def get_moves(self, board:board) -> set:
         
         moves = []
         for vector in KING_VECTORS:
             pos = self.pos
             pos = add_coords(pos, vector)
-            if self.valid_move(grid, pos):
+            if self.valid_move(board, pos):
                 moves.append(pos)
 
         if not self.has_moved:
@@ -569,9 +569,9 @@ class King(Piece):
 
             match self.color:
                 case 'w':
-                    pieces = grid.white_pieces
+                    pieces = board.white_pieces
                 case 'b':
-                    pieces = grid.black_pieces
+                    pieces = board.black_pieces
 
            
             for piece in pieces:
@@ -580,13 +580,13 @@ class King(Piece):
                     if not piece.has_moved:
                         match piece.pos[0]:
                             case 1:
-                                if not (grid.coords((2, piece.pos[1])).contains_piece or grid.coords((3, piece.pos[1])).contains_piece or grid.coords((4, piece.pos[1])).contains_piece):
-                                    if self.valid_move(grid, (3, piece.pos[1])):
+                                if not (board.coords((2, piece.pos[1])).contains_piece or board.coords((3, piece.pos[1])).contains_piece or board.coords((4, piece.pos[1])).contains_piece):
+                                    if self.valid_move(board, (3, piece.pos[1])):
                                         moves.append((3, piece.pos[1]))
                             case 8:
 
-                                if not (grid.coords((6, piece.pos[1])).contains_piece or grid.coords((7, piece.pos[1])).contains_piece):
-                                    if self.valid_move(grid, (7, piece.pos[1])):
+                                if not (board.coords((6, piece.pos[1])).contains_piece or board.coords((7, piece.pos[1])).contains_piece):
+                                    if self.valid_move(board, (7, piece.pos[1])):
                                         moves.append((7, piece.pos[1]))
                             case _:
                                 raise Exception('Could not find rook')
@@ -595,40 +595,40 @@ class King(Piece):
 
         return set(moves)
     
-    def get_possible_attack_moves(self, grid) -> set:
-        return self.get_moves(grid)
+    def get_possible_attack_moves(self, board) -> set:
+        return self.get_moves(board)
 
 
 
-def init_board(grid):
+def init_board(board):
 
     for x in range(1,9):
-        Pawn(grid, 'w', (x, 2))
-        Pawn(grid, 'b', (x, 7))
+        Pawn(board, 'w', (x, 2))
+        Pawn(board, 'b', (x, 7))
 
-    Rook(grid, 'w', (1,1))
-    Rook(grid, 'w', (8, 1))
-    Rook(grid, 'b', (1, 8))
-    Rook(grid, 'b', (8, 8))
+    Rook(board, 'w', (1,1))
+    Rook(board, 'w', (8, 1))
+    Rook(board, 'b', (1, 8))
+    Rook(board, 'b', (8, 8))
 
-    Knight(grid, 'w', (2, 1))
-    Knight(grid, 'w', (7, 1))
-    Knight(grid, 'b', (2, 8))
-    Knight(grid, 'b', (7, 8))
+    Knight(board, 'w', (2, 1))
+    Knight(board, 'w', (7, 1))
+    Knight(board, 'b', (2, 8))
+    Knight(board, 'b', (7, 8))
 
-    Bishop(grid, 'w', (3, 1))
-    Bishop(grid, 'w', (6, 1))
-    Bishop(grid, 'b', (3, 8))
-    Bishop(grid, 'b', (6, 8))
+    Bishop(board, 'w', (3, 1))
+    Bishop(board, 'w', (6, 1))
+    Bishop(board, 'b', (3, 8))
+    Bishop(board, 'b', (6, 8))
 
-    King(grid, 'w', (5, 1))
-    Queen(grid, 'w', (4, 1))
+    King(board, 'w', (5, 1))
+    Queen(board, 'w', (4, 1))
 
-    King(grid, 'b', (5, 8))
-    Queen(grid, 'b', (4, 8))
+    King(board, 'b', (5, 8))
+    Queen(board, 'b', (4, 8))
 
 
 
-grid = Grid()
-init_board(grid)
+board = board()
+init_board(board)
 
