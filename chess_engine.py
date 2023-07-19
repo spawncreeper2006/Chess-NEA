@@ -147,7 +147,7 @@ class Square:
         else:
             return ' ' * 4
 
-class board:
+class Board:
     def __init__(self):
         self.data = []
         [self.data.append(Square(WHITE_WOOD if (i % 8 + i // 8) % 2 == 1 else BLACK_WOOD)) for i in range(64)]
@@ -233,7 +233,7 @@ class Piece:
 
 
 
-    def die(self, new_board:board):
+    def die(self, new_board:Board):
         self.pieces.remove(self)
         pieces = []
         team = ''
@@ -265,7 +265,7 @@ class Piece:
 
 
     def move(self,
-             new_board:board,
+             new_board:Board,
              new_pos:tuple,
              is_simulated=False,
              flip_board=True):
@@ -500,7 +500,7 @@ class King(Piece):
         board.king_pos[color] = pos
 
     def move(self,
-             new_board:board,
+             new_board:Board,
              new_pos:tuple,
              is_simulated=False):
 
@@ -555,7 +555,7 @@ class King(Piece):
                     board.win_state = 'd'
         return new_board
 
-    def get_moves(self, board:board) -> set:
+    def get_moves(self, board:Board) -> set:
         
         moves = []
         for vector in KING_VECTORS:
@@ -629,6 +629,6 @@ def init_board(board):
 
 
 
-board = board()
+board = Board()
 init_board(board)
 
