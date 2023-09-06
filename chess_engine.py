@@ -1,5 +1,5 @@
 
-from copy import deepcopy, copy
+from copy import deepcopy
 
 KNIGHT_VECTORS = [(2, 1), (2, -1), (1, -2), (-1, -2), (-2, 1), (-2, -1), (1, 2), (-1, 2)]
 ROOK_VECTORS = [(1, 0), (0, 1), (-1, 0), (0, -1)]

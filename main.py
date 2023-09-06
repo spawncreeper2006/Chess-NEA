@@ -1,10 +1,13 @@
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+
 import pygame
 from chess_engine import *
 import random
 from tkinter import *   
 import menu
+from typing import Callable
+from minimax import Move, minimax
 
 
 def promote_pawn_UI(*args) -> int:
@@ -104,6 +107,7 @@ def display_checkmate(screen:pygame.surface.Surface, color=RED):
 
 current_possible_move_coords = []
 
+
 class Pygame_Chess_board:
     def __init__(self, pos:tuple, size:float):
         self.pos = pos
@@ -171,8 +175,10 @@ class Pygame_Chess_board:
                 pygame.draw.circle(screen, BLUE, (coords[0] + BLUE_DOT_OFFSET, coords[1] + BLUE_DOT_OFFSET), 10, 10)
 
 
-pygame.display.set_caption("Easy Chess: White Turn")
 pygame_chess_board = Pygame_Chess_board((100, 100), 400)
+
+pygame.display.set_caption("Easy Chess: White Turn")
+
 
 selected = None
 
@@ -250,129 +256,191 @@ def render_taken_piece_log(screen:pygame.surface.Surface, piece_list:list, start
         coords = add_coords(coords, (ICON_SPACING, 0))
 
 
+class Window:
+    def __init__(self, size: tuple[int, int], render_function: Callable[[list[Event]], None]):
+            
+        self.width, self.height = size
+        self.screen = pygame.display.set_mode(size)
+        self.running = True
+        self.clock = pygame.time.Clock()
+        self.current_possible_moves = set()
+        self.render_function = render_function
+        self.render_function([])
+
+    def update(self) -> bool:
         
-def main_game():
-    
-    size = (WIDTH, HEIGHT)
-    screen = pygame.display.set_mode(size)
-    running = True
-    clock = pygame.time.Clock() 
-    global selected, current_possible_move_coords
-    current_possible_moves = set()
+        events = pygame.event.get()
 
+        if events == []:
+            return True
 
-    while running:
+        event_types = list(map(lambda x: x.type, events))
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+        if pygame.QUIT in event_types:
+            return False
+        
+        elif pygame.MOUSEBUTTONDOWN in event_types:
+            self.render_function(events)
+            return True
 
-            elif event.type == pygame.MOUSEBUTTONDOWN: #MOUSE CLICK ACTIONS
-                pos = pygame.mouse.get_pos()
-                coords = pygame_chess_board.handle_click(pos)
-                if coords != None:
+        else: #Nothing happened
+            return True
+        
+    def handle_click(self):
+        global selected, current_possible_moves, current_possible_move_coords
+        pos = pygame.mouse.get_pos()
+        coords = pygame_chess_board.handle_click(pos)
+        if coords != None:
 
-                    this_square = board.coords(coords)
+            this_square = board.coords(coords)
 
-                    if this_square.contains_piece and this_square.piece.color == board.current_turn: #SELECTING PIECE
+            if this_square.contains_piece and this_square.piece.color == board.current_turn: #SELECTING PIECE
+            
+
+                this_square.clicked()
+                
+
+                if selected != None and selected != this_square:
+                    selected.back_to_default_color()
+                    for square in current_possible_moves:
+                        square.back_to_default_color()
+
+                selected = this_square
+                current_possible_moves = []
+                current_possible_move_coords = selected.piece.get_moves(board)
+                to_remove = []
+                for move in current_possible_move_coords:
+                    if not does_not_endanger_king(this_square.piece, board, move):
+                        to_remove.append(move)
+                for item in to_remove:
+                    current_possible_move_coords.remove(item)
+                        
+                
+                for square_coords in current_possible_move_coords:
+                    square = board.coords(square_coords)
+                    square.is_possible_move()
+                    current_possible_moves.append(square)
                     
+            elif this_square in current_possible_moves: #MOVING
+                piece = selected.piece
+                selected.piece.move(board, coords, True)
+                
 
-                        this_square.clicked()
-                        
+                    
+                back_to_default(selected, current_possible_moves)
+                selected = None
+                # current_spossible_moves = set()
+                match board.current_turn:
+                    case "w":
+                        pygame.display.set_caption("Easy Chess: White Turn")
+                    case "b":
+                        pygame.display.set_caption("Easy Chess: Black Turn")
 
-                        if selected != None and selected != this_square:
-                            selected.back_to_default_color()
-                            for square in current_possible_moves:
-                                square.back_to_default_color()
+                
+                current_possible_moves = []
+                current_possible_move_coords = []
 
-                        selected = this_square
-                        current_possible_moves = []
-                        current_possible_move_coords = selected.piece.get_moves(board)
-                        to_remove = []
-                        for move in current_possible_move_coords:
-                            if not does_not_endanger_king(this_square.piece, board, move):
-                                to_remove.append(move)
-                        for item in to_remove:
-                            current_possible_move_coords.remove(item)
-                                
-                        
-                        for square_coords in current_possible_move_coords:
-                            square = board.coords(square_coords)
-                            square.is_possible_move()
-                            current_possible_moves.append(square)
-                            
-                    elif this_square in current_possible_moves: #MOVING
-                        piece = selected.piece
-                        selected.piece.move(board, coords, True)
-                        
+                if has_audio:
 
-                            
-                        back_to_default(selected, current_possible_moves)
-                        selected = None
-                        current_spossible_moves = set()
-                        match board.current_turn:
-                            case "w":
-                                pygame.display.set_caption("Easy Chess: White Turn")
-                            case "b":
-                                pygame.display.set_caption("Easy Chess: Black Turn")
+                    piece = this_square.piece
+                    pieceID = piece.piece_identifier[1:]
 
-                        
-                        current_possible_moves = []
-                        current_possible_move_coords = []
+                    if random.randint(0,1) == 1:
+                        pygame.mixer.Sound.play(CHESS_SOUND_DICT[pieceID])
+                    else:
+                        pygame.mixer.Sound.play(CHESS_SOUND_DICT_2[pieceID])
+                
+                
 
-                        if has_audio:
+            elif selected != None: #CLICKED AWAY FROM PIECE
 
-                            piece = this_square.piece
-                            pieceID = piece.piece_identifier[1:]
-
-                            if random.randint(0,1) == 1:
-                                pygame.mixer.Sound.play(CHESS_SOUND_DICT[pieceID])
-                            else:
-                                pygame.mixer.Sound.play(CHESS_SOUND_DICT_2[pieceID])
-                        
-                        
-
-                    elif selected != None: #CLICKED AWAY FROM PIECE
-
-                        back_to_default(selected, current_possible_moves)
-                        selected = None
-                        current_possible_moves = set()
-                        current_possible_move_coords = []
+                back_to_default(selected, current_possible_moves)
+                selected = None
+                current_possible_moves = set()
+                current_possible_move_coords = []
     
-        screen.fill(WHITE)
-        pygame_chess_board.render_board(screen, board.current_turn)
+    def render_screen(self, *, view_direction: str):
 
-        match board.current_turn:
+        self.screen.fill(WHITE)
+        pygame_chess_board.render_board(self.screen, view_direction)
+
+        match view_direction:
             case 'w':
-                render_taken_piece_log(screen, board.taken_white_pieces, (100, 30))
-                render_taken_piece_log(screen, board.taken_black_pieces, (100, HEIGHT - 50))
+                render_taken_piece_log(self.screen, board.taken_white_pieces, (100, 30))
+                render_taken_piece_log(self.screen, board.taken_black_pieces, (100, HEIGHT - 50))
 
             case 'b':
-                render_taken_piece_log(screen, board.taken_black_pieces, (100, 30))
-                render_taken_piece_log(screen, board.taken_white_pieces, (100, HEIGHT - 50))
-
-            
+                render_taken_piece_log(self.screen, board.taken_black_pieces, (100, 30))
+                render_taken_piece_log(self.screen, board.taken_white_pieces, (100, HEIGHT - 50))
 
         if board.win_state != '':
 
             match board.win_state:
                 case 'w':
-                    display_checkmate(screen)
+                    display_checkmate(self.screen)
                 case 'b':
-                    display_checkmate(screen)
+                    display_checkmate(self.screen)
                 case 'd':
                     raise NotImplementedError
 
         elif board.white_checked or board.black_checked:
-            display_check(screen)
+            display_check(self.screen)
 
 
-    
-        pygame.display.flip()
+
+class Against_Minimax_Singleplayer(Window):
+
+    def render_function(self, events: list[Event]):
+
+        if board.current_turn == self.player_side:
+
+            for event in events:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.handle_click()
+
+            self.render_screen(view_direction=self.player_side)
+
+            pygame.display.flip()
+
+        else:
+
+            print (minimax(board, 1, False))
+
         
-        clock.tick(FPS)
+
+
+    def __init__(self, size: tuple[int, int], player_side: str):
+        self.player_side = player_side
+        super().__init__(size, self.render_function)
+
+
+
+class Same_PC_Multiplayer(Window):
+
+    def render_function(self, events: list[Event]):
+
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN: #MOUSE CLICK ACTIONS
+                self.handle_click()
     
+
+        self.render_screen(view_direction=board.current_turn)
+
+        pygame.display.flip()
+
+
+    def __init__(self, size: tuple[int, int]):
+        super().__init__(size, self.render_function)
+
+
+
+
+def main_game(window:Window):
+    
+    while window.update():
+        window.clock.tick(FPS)
     pygame.quit()
+
 
 def main():
     while True:
@@ -380,7 +448,7 @@ def main():
             case 'singleplayer':
                 match menu.Singleplayer().run():
                     case 'minimax':
-                        print ('minimax')
+                        main_game(Against_Minimax_Singleplayer((600, 600), 'w'))
                     case 'ai':
                         print('ai')
             case 'multiplayer':
@@ -391,7 +459,7 @@ def main():
                     case 'tournament':
                         print ('tournament')
                     case 'same pc':
-                        main_game()
+                        main_game(Same_PC_Multiplayer((600, 600)))
             case 'quit':
                 break
 
