@@ -286,7 +286,8 @@ class Window:
         else: #Nothing happened
             return True
         
-    def handle_click(self):
+    def handle_click(self) -> bool:
+        move_made = False
         global selected, current_possible_moves, current_possible_move_coords
         pos = pygame.mouse.get_pos()
         coords = pygame_chess_board.handle_click(pos)
@@ -322,6 +323,7 @@ class Window:
                     current_possible_moves.append(square)
                     
             elif this_square in current_possible_moves: #MOVING
+                move_made = True
                 piece = selected.piece
                 selected.piece.move(board, coords, True)
                 
@@ -358,6 +360,8 @@ class Window:
                 selected = None
                 current_possible_moves = set()
                 current_possible_move_coords = []
+
+        return move_made
     
     def render_screen(self, *, view_direction: str):
 
@@ -392,19 +396,36 @@ class Against_Minimax_Singleplayer(Window):
 
     def render_function(self, events: list[Event]):
 
-        if board.current_turn == self.player_side:
+        moves = []
 
-            for event in events:
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    self.handle_click()
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                moves.append(self.handle_click())
+
+        move = any(moves)
+
+        self.render_screen(view_direction=self.player_side)
+
+        pygame.display.flip()
+
+        print (move)
+
+        if move and board.win_state == '':
+
+            move = minimax(board, 1, False)
+            try:
+                board.coords(move.start_pos).piece.move(board, move.pos)
+            except:
+                print (move, 'failed ')
+
+                piece, pos = random.choice(list(get_team_moves('b', board)))
+                piece.move(board, pos)
 
             self.render_screen(view_direction=self.player_side)
 
             pygame.display.flip()
 
-        else:
 
-            print (minimax(board, 1, False))
 
         
 
