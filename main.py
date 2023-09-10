@@ -473,29 +473,43 @@ def main_game(window:Window):
 
 def main():
     while True:
-        match menu.Main_Menu().run():
-            case 'singleplayer':
-                match menu.Singleplayer().run():
-                    case 'minimax':
-                        main_game(Against_Minimax_Singleplayer((600, 600), 'w'))
-                    case 'ai':
-                        print('ai')
-            case 'multiplayer':
-
-                match menu.Multiplayer().run():
-                    case 'quickplay':
-                        print ('quickplay')
-                    case 'tournament':
-                        print ('tournament')
-                    case 'same pc':
-                        main_game(Same_PC_Multiplayer((600, 600)))
+        match menu.menu():
+            case 'minimax':
+                main_game(Against_Minimax_Singleplayer((600, 600), 'w'))
+            case 'ai':
+                print ('ai')
+            case 'quickplay':
+                print ('quickplay')
+            case 'tournament':
+                print ('tournament')
+            case 'same pc':
+                main_game(Same_PC_Multiplayer((600, 600)))
             case 'quit':
                 break
+
+        # match menu.Main_Menu().run():
+        #     case 'singleplayer':
+        #         match menu.Singleplayer().run():
+        #             case 'minimax':
+        #                 main_game(Against_Minimax_Singleplayer((600, 600), 'w'))
+        #             case 'ai':
+        #                 print('ai')
+        #     case 'multiplayer':
+
+        #         match menu.Multiplayer().run():
+        #             case 'quickplay':
+        #                 print ('quickplay')
+        #             case 'tournament':
+        #                 print ('tournament')
+        #             case 'same pc':
+        #                 main_game(Same_PC_Multiplayer((600, 600)))
+        #     case 'quit':
+        #         break
             
-            case None:
-                break
+        #     case None:
+        #         break
 
-
+        pass
 
 if __name__ == '__main__':
     main()
