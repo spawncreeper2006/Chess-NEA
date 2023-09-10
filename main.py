@@ -409,12 +409,28 @@ class Against_Minimax_Singleplayer(Window):
 
         pygame.display.flip()
 
-
+        print (move)
 
         if move and board.win_state == '':
 
-            piece, pos = minimax(board, 2)
-            piece.move(board, pos)
+            move = minimax(board, 1, False)
+            legal_moves = list(get_team_moves('b', board))
+            try:
+                piece, pos = board.coords(move.start_pos).piece, move.pos
+
+                if not (piece, pos) in legal_moves:
+                    print ('failed 1')
+                    piece, pos = random.choice(legal_moves)
+                    piece.move(board, pos)
+                else:
+                    
+                    board.coords(move.start_pos).piece.move(move.pos)
+
+            except:
+                print ('failed 2')
+
+                piece, pos = random.choice(legal_moves)
+                piece.move(board, pos)
 
             self.render_screen(view_direction=self.player_side)
 
@@ -457,19 +473,28 @@ def main_game(window:Window):
 
 def main():
     while True:
-        match menu.menu():
-            case 'minimax':
-                main_game(Against_Minimax_Singleplayer((600, 600), 'w'))
-            case 'ai':
-                print ('ai')
-            case 'quickplay':
-                print ('quickplay')
-            case 'tournament':
-                print ('tournament')
-            case 'same pc':
-                main_game(Same_PC_Multiplayer((600, 600)))
+        match menu.Main_Menu().run():
+            case 'singleplayer':
+                match menu.Singleplayer().run():
+                    case 'minimax':
+                        main_game(Against_Minimax_Singleplayer((600, 600), 'w'))
+                    case 'ai':
+                        print('ai')
+            case 'multiplayer':
+
+                match menu.Multiplayer().run():
+                    case 'quickplay':
+                        print ('quickplay')
+                    case 'tournament':
+                        print ('tournament')
+                    case 'same pc':
+                        main_game(Same_PC_Multiplayer((600, 600)))
             case 'quit':
                 break
+            
+            case None:
+                break
+
 
 
 if __name__ == '__main__':
