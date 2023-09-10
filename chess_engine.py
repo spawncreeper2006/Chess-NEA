@@ -256,9 +256,9 @@ class Piece:
                 pieces.insert(pieces.count(team + 'P') + pieces.count(team + 'B') + pieces.count(team + 'Kn'), self.piece_identifier)
             case 'Q':
                 pieces.insert(pieces.count(team + 'P') + pieces.count(team + 'B') + pieces.count(team + 'Kn') + pieces.count(team + 'R'), self.piece_identifier)
-            case _:
-                print (self.piece_identifier)
-                raise Exception('could not find piece')
+            # case _:
+            #     print (self.piece_identifier)
+            #     raise Exception('could not find piece')
         
 
 

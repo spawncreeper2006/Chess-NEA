@@ -45,15 +45,15 @@ class Main_Menu(Menu):
     def __init__(self, root):
         super().__init__(root)
         Button(self.root, text='          Singleplayer          ', font=('Ariel', 15), justify='center', command=self.return_and_stop('singleplayer')).place(x=WIDTH//2 - 100, y=180)
-        Button(self.root, text='           Multiplayer          ', font=('Ariel', 15), justify='center', command=self.return_and_stop('multiplayer')).place(x=WIDTH//2 - 100, y=280)
-        Button(self.root, text='                Quit               ', font=('Ariel', 15), justify='center', command=self.return_and_stop('quit')).place(x=WIDTH//2 - 100, y=380)
+        Button(self.root, text='           Multiplayer           ', font=('Ariel', 15), justify='center', command=self.return_and_stop('multiplayer')).place(x=WIDTH//2 - 100, y=280)
+        Button(self.root, text='                Quit                ', font=('Ariel', 15), justify='center', command=self.return_and_stop('quit')).place(x=WIDTH//2 - 100, y=380)
         
 class Singleplayer(Menu):
     def __init__(self, root):
         super().__init__(root)
-        Button(self.root, text='             Minimax        ', font=('Ariel', 15), justify='center', command=self.return_and_stop('minimax')).place(x=WIDTH//2 - 100, y=180)
-        Button(self.root, text='                 AI            ', font=('Ariel', 15), justify='center', command=self.return_and_stop('ai')).place(x=WIDTH//2 - 100, y=280)
-        Button(self.root, text='               Back            ', font=('Ariel', 15), justify='center', command=self.return_and_stop('back')).place(x=WIDTH//2 - 100, y=380)
+        Button(self.root, text='             Minimax             ', font=('Ariel', 15), justify='center', command=self.return_and_stop('minimax')).place(x=WIDTH//2 - 100, y=180)
+        Button(self.root, text='                 AI                 ', font=('Ariel', 15), justify='center', command=self.return_and_stop('ai')).place(x=WIDTH//2 - 100, y=280)
+        Button(self.root, text='               Back               ', font=('Ariel', 15), justify='center', command=self.return_and_stop('back')).place(x=WIDTH//2 - 100, y=380)
 
 
 class Multiplayer(Menu):
@@ -73,12 +73,6 @@ tournament
 same pc
 quit
 '''
-
-# def main_menu(root):
-    
-#     Button(root, text='          Singleplayer          ', font=('Ariel', 15), justify='center', command=self.return_and_stop('singleplayer')).place(x=WIDTH//2 - 100, y=180)
-#     Button(root, text='           Multiplayer          ', font=('Ariel', 15), justify='center', command=self.return_and_stop('multiplayer')).place(x=WIDTH//2 - 100, y=280)
-#     Button(root, text='                Quit               ', font=('Ariel', 15), justify='center', command=self.return_and_stop('quit')).place(x=WIDTH//2 - 100, y=380)
 
 def menu() -> str:
     root = Tk()
@@ -106,6 +100,5 @@ def menu() -> str:
             
             case _:
                 return 'quit'
-
 
 
