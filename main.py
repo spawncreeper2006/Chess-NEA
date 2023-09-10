@@ -7,8 +7,10 @@ import random
 from tkinter import *   
 import menu
 from typing import Callable
-from minimax import Move, minimax
-
+from minimax import minimax
+import sys
+from threading import Thread
+import time
 
 def promote_pawn_UI(*args) -> int:
     pieces = [Queen, Rook, Bishop, Knight]
@@ -54,8 +56,6 @@ except pygame.error:
     has_audio = False
 else:
     has_audio = True
-
-
 
 
 WHITE = (255, 255, 255)
@@ -178,7 +178,7 @@ class Pygame_Chess_board:
 
 pygame_chess_board = Pygame_Chess_board((100, 100), 400)
 
-pygame.display.set_caption("Easy Chess: White Turn")
+
 
 
 selected = None
@@ -259,7 +259,9 @@ def render_taken_piece_log(screen:pygame.surface.Surface, piece_list:list, start
 
 class Window:
     def __init__(self, size: tuple[int, int], render_function: Callable[[list[Event]], None]):
-            
+        self.thread = None
+        self.busy = False
+        self.finished_thread = False
         self.width, self.height = size
         self.screen = pygame.display.set_mode(size)
         self.running = True
@@ -268,9 +270,19 @@ class Window:
         self.render_function = render_function
         self.render_function([])
 
+
+
+
     def update(self) -> bool:
         
         events = pygame.event.get()
+
+
+        if self.finished_thread:
+            self.finished_thread = False
+            self.busy = False
+            self.render_function(events)
+            return True
 
         if events == []:
             return True
@@ -283,10 +295,28 @@ class Window:
         elif pygame.MOUSEBUTTONDOWN in event_types:
             self.render_function(events)
             return True
+        
+
 
         else: #Nothing happened
             return True
         
+    def move(self, piece, pos):
+        
+        piece.move(board, pos)
+        self.play_sound_effect(piece)
+
+    def play_sound_effect(self, piece):
+        if has_audio:
+
+            
+            pieceID = piece.piece_identifier[1:]
+
+            if random.randint(0,1) == 1:
+                pygame.mixer.Sound.play(CHESS_SOUND_DICT[pieceID])
+            else:
+                pygame.mixer.Sound.play(CHESS_SOUND_DICT_2[pieceID])
+
     def handle_click(self) -> bool:
         move_made = False
         global selected, current_possible_moves, current_possible_move_coords
@@ -333,25 +363,13 @@ class Window:
                 back_to_default(selected, current_possible_moves)
                 selected = None
                 # current_spossible_moves = set()
-                match board.current_turn:
-                    case "w":
-                        pygame.display.set_caption("Easy Chess: White Turn")
-                    case "b":
-                        pygame.display.set_caption("Easy Chess: Black Turn")
+                
 
                 
                 current_possible_moves = []
                 current_possible_move_coords = []
 
-                if has_audio:
-
-                    piece = this_square.piece
-                    pieceID = piece.piece_identifier[1:]
-
-                    if random.randint(0,1) == 1:
-                        pygame.mixer.Sound.play(CHESS_SOUND_DICT[pieceID])
-                    else:
-                        pygame.mixer.Sound.play(CHESS_SOUND_DICT_2[pieceID])
+                self.play_sound_effect(this_square.piece)
                 
                 
 
@@ -366,8 +384,13 @@ class Window:
     
     def render_screen(self, *, view_direction: str):
 
+
+        
+
+
         self.screen.fill(WHITE)
         pygame_chess_board.render_board(self.screen, view_direction)
+        
 
         match view_direction:
             case 'w':
@@ -377,6 +400,8 @@ class Window:
             case 'b':
                 render_taken_piece_log(self.screen, board.taken_black_pieces, (100, 30))
                 render_taken_piece_log(self.screen, board.taken_white_pieces, (100, HEIGHT - 50))
+
+        
 
         if board.win_state != '':
 
@@ -390,10 +415,29 @@ class Window:
 
         elif board.white_checked or board.black_checked:
             display_check(self.screen)
+        
+        
+
+        match board.current_turn:
+            case "w":
+                pygame.display.set_caption("Easy Chess: White Turn")
+            case "b":
+                pygame.display.set_caption("Easy Chess: Black Turn")
 
 
+def wait_for_move(window: Window, func, *args):
+    piece, pos = func(*args)
+    window.move(piece, pos)
+    window.finished_thread = True
 
 class Against_Minimax_Singleplayer(Window):
+
+
+
+
+        
+
+
 
     def render_function(self, events: list[Event]):
 
@@ -403,22 +447,20 @@ class Against_Minimax_Singleplayer(Window):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 moves.append(self.handle_click())
 
-        move = any(moves)
+
 
         self.render_screen(view_direction=self.player_side)
-
         pygame.display.flip()
 
 
 
-        if move and board.win_state == '':
+        if not self.busy and board.current_turn != self.player_side:
+            self.busy = True
 
-            piece, pos = minimax(board, 2)
-            piece.move(board, pos)
+            self.thread = Thread(target= wait_for_move, args=((self, minimax, board, 2)))
+            self.thread.start()
 
-            self.render_screen(view_direction=self.player_side)
 
-            pygame.display.flip()
 
 
 
@@ -455,6 +497,7 @@ def main_game(window:Window):
 
 
 def main():
+
     while True:
         match menu.menu():
             case 'minimax':
@@ -469,6 +512,9 @@ def main():
                 main_game(Same_PC_Multiplayer((600, 600)))
             case 'quit':
                 break
+        
+        init_board(board)
+
 
 
 if __name__ == '__main__':

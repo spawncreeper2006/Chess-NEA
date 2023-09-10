@@ -149,8 +149,8 @@ class Square:
 
 class Board:
     def __init__(self):
+
         self.data = []
-        [self.data.append(Square(WHITE_WOOD if (i % 8 + i // 8) % 2 == 1 else BLACK_WOOD)) for i in range(64)]
         self.current_turn = 'w'
         self.white_checked = False
         self.black_checked = False
@@ -601,7 +601,19 @@ class King(Piece):
 
 
 
-def init_board(board):
+def init_board(board: Board):
+
+    board.data = []
+    [board.data.append(Square(WHITE_WOOD if (i % 8 + i // 8) % 2 == 1 else BLACK_WOOD)) for i in range(64)]
+    board.current_turn = 'w'
+    board.white_checked = False
+    board.black_checked = False
+    board.win_state = ''
+    board.white_pieces = []
+    board.black_pieces = []
+    board.taken_white_pieces = []
+    board.taken_black_pieces = []
+    board.king_pos = {}
 
     for x in range(1,9):
         Pawn(board, 'w', (x, 2))
@@ -627,6 +639,7 @@ def init_board(board):
 
     King(board, 'b', (5, 8))
     Queen(board, 'b', (4, 8))
+
 
 
 
