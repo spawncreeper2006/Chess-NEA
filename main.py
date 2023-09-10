@@ -78,6 +78,7 @@ BIG_FONT = pygame.font.SysFont(None, 35)
 BLUE_DOT_OFFSET = 25
 ICON_SPACING = 30
 
+current_possible_moves = []
 
 
 
@@ -413,21 +414,28 @@ class Against_Minimax_Singleplayer(Window):
         if move and board.win_state == '':
 
             move = minimax(board, 1, False)
+            legal_moves = list(get_team_moves('b', board))
             try:
-                board.coords(move.start_pos).piece.move(board, move.pos)
-            except:
-                print (move, 'failed ')
+                piece, pos = board.coords(move.start_pos).piece, move.pos
 
-                piece, pos = random.choice(list(get_team_moves('b', board)))
+                if not (piece, pos) in legal_moves:
+                    print ('failed 1')
+                    piece, pos = random.choice(legal_moves)
+                    piece.move(board, pos)
+                else:
+                    
+                    board.coords(move.start_pos).piece.move(move.pos)
+
+            except:
+                print ('failed 2')
+
+                piece, pos = random.choice(legal_moves)
                 piece.move(board, pos)
 
             self.render_screen(view_direction=self.player_side)
 
             pygame.display.flip()
 
-
-
-        
 
 
     def __init__(self, size: tuple[int, int], player_side: str):
@@ -482,6 +490,9 @@ def main():
                     case 'same pc':
                         main_game(Same_PC_Multiplayer((600, 600)))
             case 'quit':
+                break
+            
+            case None:
                 break
 
 
