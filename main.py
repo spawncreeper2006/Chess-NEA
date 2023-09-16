@@ -8,11 +8,12 @@ from tkinter import *
 import menu
 from typing import Callable
 from minimax import minimax
-import sys
 from threading import Thread
-import time
 
-def promote_pawn_UI(*args) -> int:
+board = Board()
+init_board(board)
+
+def promote_pawn_UI() -> int:
     pieces = [Queen, Rook, Bishop, Knight]
     root = Tk()
     WIDTH = 200
@@ -49,6 +50,7 @@ def promote_pawn_UI(*args) -> int:
 board.ask_for_promotion = promote_pawn_UI
 
 pygame.init()
+
 
 try:
     pygame.mixer.init()
@@ -232,20 +234,8 @@ ICON_PIECE_IMAGE_DICT = {'BB': pygame.transform.scale(BB_IMAGE, ICON_IMAGE_DIMEN
 
 if has_audio:
 
-    CHESS_SOUND_DICT = {'B': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Bishop.wav')),
-                        'K': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'King.wav')),
-                        'Kn': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Knight.wav')),
-                        'P': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Pawn.wav')),
-                        'Q': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Queen.wav')),
-                        'R': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Rook.wav'))}
-
-    CHESS_SOUND_DICT_2 = {'B': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Bishop 2.wav')),
-                        'K': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'King 2.wav')),
-                        'Kn': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Knight 2.wav')),
-                        'P': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Pawn 2.wav')),
-                        'Q': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Queen 2.wav')),
-                        'R': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Rook 2.wav'))}
-
+    CHESS_SOUND_DICT = {}
+    CHESS_SOUND_DICT_2 = {}
 
 
 
@@ -259,6 +249,7 @@ def render_taken_piece_log(screen:pygame.surface.Surface, piece_list:list, start
 
 class Window:
     def __init__(self, size: tuple[int, int], render_function: Callable[[list[Event]], None]):
+        global CHESS_SOUND_DICT, CHESS_SOUND_DICT_2
         self.thread = None
         self.busy = False
         self.finished_thread = False
@@ -269,6 +260,24 @@ class Window:
         self.current_possible_moves = set()
         self.render_function = render_function
         self.render_function([])
+
+        if has_audio:
+                
+            pygame.mixer.init()
+            
+            CHESS_SOUND_DICT = {'B': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Bishop.wav')),
+                                'K': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'King.wav')),
+                                'Kn': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Knight.wav')),
+                                'P': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Pawn.wav')),
+                                'Q': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Queen.wav')),
+                                'R': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Rook.wav'))}
+
+            CHESS_SOUND_DICT_2 = {'B': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Bishop 2.wav')),
+                                'K': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'King 2.wav')),
+                                'Kn': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Knight 2.wav')),
+                                'P': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Pawn 2.wav')),
+                                'Q': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Queen 2.wav')),
+                                'R': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Rook 2.wav'))}
 
 
 
@@ -307,10 +316,14 @@ class Window:
         self.play_sound_effect(piece)
 
     def play_sound_effect(self, piece: Piece):
+
+        
         if has_audio:
 
             
             pieceID = piece.piece_identifier[1:]
+
+
 
             if random.randint(0,1) == 1:
                 pygame.mixer.Sound.play(CHESS_SOUND_DICT[pieceID])
@@ -354,22 +367,24 @@ class Window:
                     current_possible_moves.append(square)
                     
             elif this_square in current_possible_moves: #MOVING
+                
                 move_made = True
                 piece = selected.piece
                 selected.piece.move(board, coords, True)
                 
 
-                    
-                back_to_default(selected, current_possible_moves)
-                selected = None
-                # current_spossible_moves = set()
                 
+                back_to_default(selected, current_possible_moves)
+                selected = None                
 
                 
                 current_possible_moves = []
                 current_possible_move_coords = []
 
+
                 self.play_sound_effect(this_square.piece)
+
+                
                 
                 
 
@@ -431,11 +446,6 @@ class Against_Minimax_Singleplayer(Window):
 
 
 
-
-        
-
-
-
     def render_function(self, events: list[Event]):
 
         moves = []
@@ -451,7 +461,7 @@ class Against_Minimax_Singleplayer(Window):
 
 
 
-        if not self.busy and board.current_turn != self.player_side:
+        if not self.busy and board.current_turn != self.player_side and board.win_state == '':
             self.busy = True
 
             self.thread = Thread(target= wait_for_move, args=((self, minimax, board, 2)))

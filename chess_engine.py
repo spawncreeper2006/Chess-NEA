@@ -645,6 +645,6 @@ def init_board(board: Board):
 
 
 
-board = Board()
-init_board(board)
+# board = Board()
+# init_board(board)
 
