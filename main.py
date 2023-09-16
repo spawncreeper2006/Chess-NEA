@@ -260,6 +260,7 @@ class Window:
         self.current_possible_moves = set()
         self.render_function = render_function
         self.render_function([])
+        self.destroyed = False
 
         if has_audio:
                 
@@ -299,6 +300,7 @@ class Window:
         event_types = list(map(lambda x: x.type, events))
 
         if pygame.QUIT in event_types:
+            self.destroyed = True
             return False
         
         elif pygame.MOUSEBUTTONDOWN in event_types:
@@ -438,9 +440,13 @@ class Window:
 
 
 def wait_for_move(window: Window, func, *args):
+
     piece, pos = func(*args)
-    window.move(piece, pos)
-    window.finished_thread = True
+    if not window.destroyed:
+
+        window.move(piece, pos)
+        window.finished_thread = True
+
 
 class Against_Minimax_Singleplayer(Window):
 
