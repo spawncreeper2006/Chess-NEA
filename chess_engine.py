@@ -201,13 +201,13 @@ class Board:
 
 
 class Piece:
-    def __init__(self, board, color:str, pos:tuple, piece_type:str):
+    def __init__(self, this_board: Board, color:str, pos:tuple, piece_type:str):
 
         
 
         self.color = color
         self.pos = pos
-        board.coords(pos).update_piece(self)
+        this_board.coords(pos).update_piece(self)
         self.has_moved = False
 
         if len(piece_type) == 1:
@@ -222,11 +222,11 @@ class Piece:
 
         match color:
             case 'w':
-                board.white_pieces.append(self)
-                self.pieces = board.white_pieces
+                this_board.white_pieces.append(self)
+                self.pieces = this_board.white_pieces
             case 'b':
-                board.black_pieces.append(self)
-                self.pieces = board.black_pieces
+                this_board.black_pieces.append(self)
+                self.pieces = this_board.black_pieces
 
 
         
@@ -602,6 +602,8 @@ class King(Piece):
 
 
 def init_board(board: Board):
+
+
 
     board.data = []
     [board.data.append(Square(WHITE_WOOD if (i % 8 + i // 8) % 2 == 1 else BLACK_WOOD)) for i in range(64)]

@@ -301,12 +301,12 @@ class Window:
         else: #Nothing happened
             return True
         
-    def move(self, piece, pos):
+    def move(self, piece: Piece, pos: tuple[int, int]):
         
         piece.move(board, pos)
         self.play_sound_effect(piece)
 
-    def play_sound_effect(self, piece):
+    def play_sound_effect(self, piece: Piece):
         if has_audio:
 
             
@@ -383,9 +383,6 @@ class Window:
         return move_made
     
     def render_screen(self, *, view_direction: str):
-
-
-        
 
 
         self.screen.fill(WHITE)
