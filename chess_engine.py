@@ -1,5 +1,6 @@
 
 from copy import deepcopy
+from stack import Coord_Stack
 
 KNIGHT_VECTORS = [(2, 1), (2, -1), (1, -2), (-1, -2), (-2, 1), (-2, -1), (1, 2), (-1, 2)]
 ROOK_VECTORS = [(1, 0), (0, 1), (-1, 0), (0, -1)]
@@ -48,7 +49,10 @@ def get_team_attack_moves(team:str, this_board) -> set:
         case 'b':
             team_pieces = this_board.black_pieces
 
+    
+
     for piece in team_pieces:
+
 
         moves += piece.get_possible_attack_moves(this_board)
 
@@ -160,6 +164,8 @@ class Board:
         self.taken_white_pieces = []
         self.taken_black_pieces = []
         self.king_pos = {}
+        self.previous_piece_to_move = None
+        self.stack = Coord_Stack(1000)
 
 
     def change_current_turn(self):
@@ -269,7 +275,15 @@ class Piece:
              new_board:Board,
              new_pos:tuple,
              is_simulated=False,
-             flip_board=True):
+             flip_board=True,
+             is_computer=False):
+        
+        new_board.stack.push(self.pos)
+        new_board.stack.push(new_pos)
+        
+
+
+        new_board.previous_piece_to_move = self
 
         new_board.coords(self.pos).update_piece(None)
         
@@ -283,14 +297,60 @@ class Piece:
         else:
             target_square.update_piece(self)
 
+        if type(self) is Pawn:
+            if new_pos == self.en_passant_move:
+                square = new_board.coords((new_pos[0], new_pos[1] - self.yvector))
+                square.piece.die(new_board)
+                square.update_piece(None)
+
         
         
+        old_pos = self.pos
         self.pos = new_pos
         self.has_moved = True
         if flip_board:
             new_board.change_current_turn()
 
+        
+
+        
+        if self.piece_identifier[1] == 'P' and is_simulated or is_computer: #it is a pawn
+
+            if abs(old_pos[1] - new_pos[1]) == 2:
+
+                self.double_moved = True
+            else:
+                self.double_moved = False
+
+            
+
+            to_promote = False
+            
+            match self.color:
+                case 'w':
+                     if self.pos[1] == 8:
+                         to_promote = True
+                         
+                         new_board.white_pieces.remove(self)
+                         team = 'w'
+                case 'b':
+                    if self.pos[1] == 1:
+                        to_promote = True
+                        
+                        new_board.black_pieces.remove(self)
+                        team = 'b'
+
+
+            if to_promote:
+                if is_computer:
+                    new_piece = Queen
+                else:
+                    new_piece = new_board.ask_for_promotion()
+                new_piece(new_board, team, self.pos)
+
+
         in_check = king_in_check(new_board)
+
         if is_simulated:
 
             cm = can_move(new_board)
@@ -303,29 +363,6 @@ class Piece:
 
                 else:
                     board.win_state = 'd'
-
-        
-        if self.piece_identifier[1] == 'P' and is_simulated: #it is a pawn
-
-            to_promote = False
-            
-            match self.color:
-                case 'w':
-                     if self.pos[1] == 8:
-                         to_promote = True
-                         new_piece = new_board.ask_for_promotion()
-                         new_board.white_pieces.remove(self)
-                         team = 'w'
-                case 'b':
-                    if self.pos[1] == 1:
-                        to_promote = True
-                        new_piece = new_board.ask_for_promotion()
-                        new_board.black_pieces.remove(self)
-                        team = 'b'
-
-            if to_promote:
-                new_piece(new_board, team, self.pos)
-
 
 
         return new_board
@@ -370,6 +407,22 @@ class Pawn(Piece):
         super().__init__(board, color, pos, 'p')
         
         self.yvector = 1 if self.color == 'w' else -1
+        self.double_moved = False
+        self.en_passant_move = None
+
+    def check_for_en_passant(self, board: Board):
+        for x in (-1, 1):
+            coords = self.pos
+            coords = (coords[0] + x, coords[1])
+            if board.in_board((coords)):
+                square = board.coords(coords)
+                if square.contains_piece:
+                    if type(square.piece) is Pawn:
+                        if square.piece.double_moved and board.previous_piece_to_move == square.piece:
+                            self.en_passant_move = (coords[0], coords[1] + self.yvector)
+                            return [self.en_passant_move]
+        self.en_passant_move = None
+        return []
 
     def get_moves(self, board) -> set:
         
@@ -391,6 +444,9 @@ class Pawn(Piece):
             new_pos = add_coords(self.pos, (x, self.yvector))
             if self.valid_take(board, new_pos):
                 moves.append(new_pos)
+
+        moves += self.check_for_en_passant(board)
+
 
         return set(moves)
     
@@ -503,7 +559,8 @@ class King(Piece):
     def move(self,
              new_board:Board,
              new_pos:tuple,
-             is_simulated=False):
+             is_simulated=False,
+             is_computer=False):
 
         new_board.coords(self.pos).update_piece(None)
         
@@ -645,6 +702,6 @@ def init_board(board: Board):
 
 
 
-# board = Board()
-# init_board(board)
+board = Board()
+init_board(board)
 

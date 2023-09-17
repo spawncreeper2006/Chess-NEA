@@ -10,10 +10,7 @@ from typing import Callable
 from minimax import minimax
 from threading import Thread
 
-board = Board()
-init_board(board)
-
-def promote_pawn_UI() -> int:
+def promote_pawn_UI() -> Piece:
     pieces = [Queen, Rook, Bishop, Knight]
     root = Tk()
     WIDTH = 200
@@ -82,6 +79,8 @@ ICON_SPACING = 30
 
 current_possible_moves = []
 
+DEBUG_MODE = False
+
 
 
 def screen_to_chess_coords(coords:tuple) -> tuple:
@@ -103,7 +102,8 @@ def display_check(screen:pygame.surface.Surface, color=RED):
 def display_checkmate(screen:pygame.surface.Surface, color=RED):
     screen.blit(BIG_FONT.render("Checkmate", False, color), (WIDTH//2 - 40, 0))
 
-
+def display_draw(screen:pygame.surface.Surface, color=RED):
+    screen.blit(BIG_FONT.render("Draw", False, color), (WIDTH//2 - 40, 0))
 
 
 
@@ -260,6 +260,7 @@ class Window:
         self.current_possible_moves = set()
         self.render_function = render_function
         self.render_function([])
+        self.disabled = False
         self.destroyed = False
 
         if has_audio:
@@ -312,9 +313,10 @@ class Window:
         else: #Nothing happened
             return True
         
-    def move(self, piece: Piece, pos: tuple[int, int]):
+    def move(self, piece: Piece, pos: tuple[int, int], is_computer=False):
         
-        piece.move(board, pos)
+        # piece.move(board, pos, is_computer=is_computer)
+        board.coords(piece.pos).piece.move(board, pos, is_computer=is_computer)
         self.play_sound_effect(piece)
 
     def play_sound_effect(self, piece: Piece):
@@ -337,7 +339,7 @@ class Window:
         global selected, current_possible_moves, current_possible_move_coords
         pos = pygame.mouse.get_pos()
         coords = pygame_chess_board.handle_click(pos)
-        if coords != None:
+        if coords != None and not self.disabled:
 
             this_square = board.coords(coords)
 
@@ -386,6 +388,7 @@ class Window:
 
                 self.play_sound_effect(this_square.piece)
 
+
                 
                 
                 
@@ -403,6 +406,15 @@ class Window:
 
 
         self.screen.fill(WHITE)
+        if DEBUG_MODE:
+            # print (get_team_attack_moves(board.current_turn, board))
+            for x in range(1, 9):
+                for y in range(1, 9):
+                    board.coords((x, y)).back_to_default_color()
+                    
+            for move in get_team_attack_moves(other_team(board.current_turn), board):
+                board.coords(move).color = RED
+
         pygame_chess_board.render_board(self.screen, view_direction)
         
 
@@ -425,7 +437,9 @@ class Window:
                 case 'b':
                     display_checkmate(self.screen)
                 case 'd':
-                    raise NotImplementedError
+                    display_draw(self.screen)
+
+            self.disabled = True
 
         elif board.white_checked or board.black_checked:
             display_check(self.screen)
@@ -444,7 +458,7 @@ def wait_for_move(window: Window, func, *args):
     piece, pos = func(*args)
     if not window.destroyed:
 
-        window.move(piece, pos)
+        window.move(piece, pos, is_computer=True)
         window.finished_thread = True
 
 
