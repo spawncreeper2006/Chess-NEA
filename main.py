@@ -249,7 +249,8 @@ def render_taken_piece_log(screen:pygame.surface.Surface, piece_list:list, start
 
 class Window:
     def __init__(self, size: tuple[int, int], render_function: Callable[[list[Event]], None]):
-        global CHESS_SOUND_DICT, CHESS_SOUND_DICT_2
+        global CHESS_SOUND_DICT, CHESS_SOUND_DICT_2, BIG_FONT, current_possible_moves, current_possible_move_coords
+        
         self.thread = None
         self.busy = False
         self.finished_thread = False
@@ -263,6 +264,9 @@ class Window:
         self.disabled = False
         self.destroyed = False
 
+        current_possible_moves = set()
+        current_possible_move_coords = set()
+        pygame.font.init()
         if has_audio:
                 
             pygame.mixer.init()
@@ -281,7 +285,7 @@ class Window:
                                 'Q': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Queen 2.wav')),
                                 'R': pygame.mixer.Sound(os.path.join(FOLDER_NAME, 'Rook 2.wav'))}
 
-
+        BIG_FONT = pygame.font.SysFont(None, 35)
 
 
     def update(self) -> bool:

@@ -698,10 +698,7 @@ def init_board(board: Board):
 
     King(board, 'b', (5, 8))
     Queen(board, 'b', (4, 8))
-
-
-
-
+    
 board = Board()
 init_board(board)
 
