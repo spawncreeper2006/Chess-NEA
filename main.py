@@ -4,15 +4,23 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 from chess_engine import *
 import random
-from tkinter import *   
+import tkinter as tk
 import menu
 from typing import Callable
 from minimax import minimax
 from threading import Thread
+from pygame_user_interface import Button
+
+from performance_monitor import log_performance
+
+def debug_func(text):
+    def func():
+        print (text)
+    return func
 
 def promote_pawn_UI() -> Piece:
     pieces = [Queen, Rook, Bishop, Knight]
-    root = Tk()
+    root = tk.Tk()
     WIDTH = 200
     HEIGHT = 200
     root.geometry(f'{WIDTH}x{HEIGHT}')
@@ -21,24 +29,24 @@ def promote_pawn_UI() -> Piece:
 
 
 
-    lbl = Label(root, text = 'What do you want to promote to?')
+    lbl = tk.Label(root, text = 'What do you want to promote to?')
     lbl.place(x=0, y=0)
 
 
-    var = IntVar()
-    r1 = Radiobutton(root, text="Queen", variable=var, value=0)
+    var = tk.IntVar()
+    r1 = tk.Radiobutton(root, text="Queen", variable=var, value=0)
     r1.place(x=0, y=50)
 
-    r2 = Radiobutton(root, text="Rook", variable=var, value=1)
+    r2 = tk.Radiobutton(root, text="Rook", variable=var, value=1)
     r2.place(x=0, y=80)
 
-    r3 = Radiobutton(root, text="Bishop", variable=var, value=2)
+    r3 = tk.Radiobutton(root, text="Bishop", variable=var, value=2)
     r3.place(x=0, y=110)
 
-    r4 = Radiobutton(root, text="Knight", variable=var, value=3)
+    r4 = tk.Radiobutton(root, text="Knight", variable=var, value=3)
     r4.place(x=0, y=140)
 
-    btn = Button(root, text = '  OK  ', command = root.destroy)
+    btn = tk.Button(root, text = '  OK  ', command = root.destroy)
     btn.place(x=145, y=160)
     root.mainloop()
 
@@ -80,6 +88,7 @@ ICON_SPACING = 30
 current_possible_moves = []
 
 DEBUG_MODE = False
+
 
 
 
@@ -247,15 +256,39 @@ def render_taken_piece_log(screen:pygame.surface.Surface, piece_list:list, start
         coords = add_coords(coords, (ICON_SPACING, 0))
 
 
+
+
+
 class Window:
-    def __init__(self, size: tuple[int, int], render_function: Callable[[list[Event]], None]):
-        global CHESS_SOUND_DICT, CHESS_SOUND_DICT_2, BIG_FONT, current_possible_moves, current_possible_move_coords
+
+    def undo(self):
+        global board
+        try:
+            board = stack.pop()
+        except:
+            return
+        pieces = board.white_pieces if board.current_turn == 'w' else board.black_pieces
+        for piece in pieces:
+            board.coords(piece.pos).back_to_default_color()
+            
+
+    def __init__(self, size: tuple[int, int], render_function: Callable[[list[pygame.event.Event]], None], undo_enabled=False):
+        global CHESS_SOUND_DICT, CHESS_SOUND_DICT_2, BIG_FONT, current_possible_moves, current_possible_move_coords, stack
         
+
+        self.widgets = []
+
+        self.screen = pygame.display.set_mode(size)
+        if undo_enabled:
+            self.widgets.append(Button(screen=self.screen, text='Undo', pos=(530, 30), click_action=self.undo, background_color=(230, 230, 230)))
+            stack.clear()
+
+
         self.thread = None
         self.busy = False
         self.finished_thread = False
         self.width, self.height = size
-        self.screen = pygame.display.set_mode(size)
+        
         self.running = True
         self.clock = pygame.time.Clock()
         self.current_possible_moves = set()
@@ -263,6 +296,8 @@ class Window:
         self.render_function([])
         self.disabled = False
         self.destroyed = False
+
+
 
         current_possible_moves = set()
         current_possible_move_coords = set()
@@ -320,7 +355,7 @@ class Window:
     def move(self, piece: Piece, pos: tuple[int, int], is_computer=False):
         
         # piece.move(board, pos, is_computer=is_computer)
-        board.coords(piece.pos).piece.move(board, pos, is_computer=is_computer)
+        board.coords(piece.pos).piece.move(board, pos, is_simulated=False, is_computer=is_computer)
         self.play_sound_effect(piece)
 
     def play_sound_effect(self, piece: Piece):
@@ -378,7 +413,8 @@ class Window:
                 
                 move_made = True
                 piece = selected.piece
-                selected.piece.move(board, coords, True)
+                #self.move(piece, coords, True)
+                piece.move(board, coords)
                 
 
                 
@@ -404,14 +440,19 @@ class Window:
                 current_possible_moves = set()
                 current_possible_move_coords = []
 
+        else:
+            for widget in self.widgets:
+                if widget.check_click(pos):
+                    break
+
         return move_made
+
     
     def render_screen(self, *, view_direction: str):
 
 
         self.screen.fill(WHITE)
         if DEBUG_MODE:
-            # print (get_team_attack_moves(board.current_turn, board))
             for x in range(1, 9):
                 for y in range(1, 9):
                     board.coords((x, y)).back_to_default_color()
@@ -457,6 +498,7 @@ class Window:
                 pygame.display.set_caption("Easy Chess: Black Turn")
 
 
+
 def wait_for_move(window: Window, func, *args):
 
     piece, pos = func(*args)
@@ -465,12 +507,25 @@ def wait_for_move(window: Window, func, *args):
         window.move(piece, pos, is_computer=True)
         window.finished_thread = True
 
+def render_widgets(func):
+    def render_widget_func(self: Window, *args, **kwargs):
+        return_val = func(self, *args, **kwargs)
+        
+        for widget in self.widgets:
+            widget.render()
+
+        pygame.display.flip()
+        return return_val
+    
+    return render_widget_func
+    
+
 
 class Against_Minimax_Singleplayer(Window):
 
 
-
-    def render_function(self, events: list[Event]):
+    @render_widgets
+    def render_function(self, events: list[pygame.event.Event]):
 
         moves = []
 
@@ -481,7 +536,7 @@ class Against_Minimax_Singleplayer(Window):
 
 
         self.render_screen(view_direction=self.player_side)
-        pygame.display.flip()
+        
 
 
 
@@ -495,15 +550,16 @@ class Against_Minimax_Singleplayer(Window):
 
 
 
-    def __init__(self, size: tuple[int, int], player_side: str):
+    def __init__(self, size: tuple[int, int], player_side: str, **kwargs):
         self.player_side = player_side
-        super().__init__(size, self.render_function)
+        super().__init__(size, self.render_function, **kwargs)
 
 
 
 class Same_PC_Multiplayer(Window):
 
-    def render_function(self, events: list[Event]):
+    @render_widgets
+    def render_function(self, events: list[pygame.event.Event]):
 
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN: #MOUSE CLICK ACTIONS
@@ -515,8 +571,8 @@ class Same_PC_Multiplayer(Window):
         pygame.display.flip()
 
 
-    def __init__(self, size: tuple[int, int]):
-        super().__init__(size, self.render_function)
+    def __init__(self, size: tuple[int, int], **kwargs):
+        super().__init__(size, self.render_function, **kwargs)
 
 
 
@@ -527,26 +583,29 @@ def main_game(window:Window):
     pygame.quit()
 
 
+@log_performance
 def main():
-
-    while True:
-        match menu.menu():
-            case 'minimax':
-                main_game(Against_Minimax_Singleplayer((600, 600), 'w'))
-            case 'ai':
-                print ('ai')
-            case 'quickplay':
-                print ('quickplay')
-            case 'tournament':
-                print ('tournament')
-            case 'same pc':
-                main_game(Same_PC_Multiplayer((600, 600)))
-            case 'quit':
-                break
-        
-        init_board(board)
-
+        while True:
+            match menu.menu():
+                case 'minimax':
+                    main_game(Against_Minimax_Singleplayer((600, 600), 'w'))
+                case 'ai':
+                    print ('ai')
+                case 'quickplay':
+                    print ('quickplay')
+                case 'tournament':
+                    print ('tournament')
+                case 'same pc':
+                    main_game(Same_PC_Multiplayer((600, 600), undo_enabled=True))
+                case 'quit':
+                    break
+            
+            init_board(board)
 
 
 if __name__ == '__main__':
+
     main()
+
+
+

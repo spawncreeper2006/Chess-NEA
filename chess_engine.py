@@ -1,6 +1,6 @@
 
 from copy import deepcopy
-from stack import Coord_Stack
+from stack import stack
 
 KNIGHT_VECTORS = [(2, 1), (2, -1), (1, -2), (-1, -2), (-2, 1), (-2, -1), (1, 2), (-1, 2)]
 ROOK_VECTORS = [(1, 0), (0, 1), (-1, 0), (0, -1)]
@@ -14,7 +14,6 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 SEP = "==============================================="
 sep = lambda: print(SEP)
-
 
 
 
@@ -64,7 +63,7 @@ def does_not_endanger_king(piece, board, pos) -> bool:
     
     piece_position = piece.pos
     piece = possible_board.coords(piece_position).piece
-    possible_board = piece.move(possible_board, pos)
+    possible_board = piece.move(possible_board, pos, is_simulated=True)
     
     enemy_attack_moves = get_team_attack_moves(possible_board.current_turn, possible_board)
     
@@ -165,7 +164,6 @@ class Board:
         self.taken_black_pieces = []
         self.king_pos = {}
         self.previous_piece_to_move = None
-        self.stack = Coord_Stack(1000)
 
 
     def change_current_turn(self):
@@ -204,6 +202,8 @@ class Board:
         for count, piece in enumerate(self.data):
             ls[7-count//8].append(str(piece))
         return '\n'.join([''.join(i) for i in ls])
+    
+
 
 
 class Piece:
@@ -262,14 +262,8 @@ class Piece:
                 pieces.insert(pieces.count(team + 'P') + pieces.count(team + 'B') + pieces.count(team + 'Kn'), self.piece_identifier)
             case 'Q':
                 pieces.insert(pieces.count(team + 'P') + pieces.count(team + 'B') + pieces.count(team + 'Kn') + pieces.count(team + 'R'), self.piece_identifier)
-            # case _:
-            #     print (self.piece_identifier)
-            #     raise Exception('could not find piece')
-        
-
 
         
-
 
     def move(self,
              new_board:Board,
@@ -278,8 +272,12 @@ class Piece:
              flip_board=True,
              is_computer=False):
         
-        new_board.stack.push(self.pos)
-        new_board.stack.push(new_pos)
+
+        
+
+        if not is_simulated:
+            print ('this is not simulated')
+            stack.push(deepcopy(new_board))
         
 
 
@@ -314,7 +312,7 @@ class Piece:
         
 
         
-        if self.piece_identifier[1] == 'P' and is_simulated or is_computer: #it is a pawn
+        if self.piece_identifier[1] == 'P' and (not is_simulated) or is_computer: #it is a pawn
 
             if abs(old_pos[1] - new_pos[1]) == 2:
 
@@ -351,7 +349,7 @@ class Piece:
 
         in_check = king_in_check(new_board)
 
-        if is_simulated:
+        if not is_simulated:
 
             cm = can_move(new_board)
 
@@ -562,6 +560,9 @@ class King(Piece):
              is_simulated=False,
              is_computer=False):
 
+        if not is_simulated:
+            print('this is not simulated')
+
         new_board.coords(self.pos).update_piece(None)
         
         target_square = new_board.coords(new_pos)
@@ -573,7 +574,7 @@ class King(Piece):
                     square = new_board.coords((1, y))
                     rook = square.piece
                     
-                    rook.move(new_board, (4, y), is_simulated, False)
+                    rook.move(new_board, (4, y), True, False)
                     
 
 
@@ -582,7 +583,7 @@ class King(Piece):
                     square = new_board.coords((8, y))
                     rook = square.piece
                     
-                    rook.move(new_board, (6, y), is_simulated, False)
+                    rook.move(new_board, (6, y), True, False)
                     
 
 
@@ -600,7 +601,7 @@ class King(Piece):
         new_board.king_pos[self.color] = new_pos
 
         in_check = king_in_check(new_board)
-        if is_simulated:
+        if not is_simulated:
             cm = can_move(new_board)
 
 

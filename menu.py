@@ -95,7 +95,10 @@ def menu() -> str:
 
                 x = Multiplayer(root).run()
                 if x != 'back':
-                    root.destroy()
+                    try:
+                        root.destroy()
+                    except:
+                        pass
                     return x
             
             case _:
