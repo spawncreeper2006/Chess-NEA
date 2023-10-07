@@ -165,6 +165,7 @@ class Board:
         self.taken_black_pieces = []
         self.king_pos = {}
         self.previous_piece_to_move = None
+        self.previous_move = ()
 
 
     def change_current_turn(self):
@@ -275,7 +276,7 @@ class Piece:
         
 
 
-
+        new_board.previous_move = (self.pos, new_pos)
         new_board.previous_piece_to_move = self
 
         new_board.coords(self.pos).update_piece(None)
