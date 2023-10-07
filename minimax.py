@@ -29,7 +29,7 @@ def sim_move(board: Board,
              start: tuple[int, int],
              end: tuple[int,int]) -> Board:
     board = deepcopy(board)
-    board.coords(start).piece.move(board, end)
+    board.coords(start).piece.move(board, end, is_simulated=True)
     return board
 
 def get_team_move_coords(team: str,

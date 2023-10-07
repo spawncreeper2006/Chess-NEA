@@ -10,8 +10,9 @@ from typing import Callable
 from minimax import minimax
 from threading import Thread
 from pygame_user_interface import Button
+from constants import *
 
-from performance_monitor import log_performance
+from performance_monitor import log_performance, show_time
 
 def debug_func(text):
     def func():
@@ -65,29 +66,14 @@ else:
     has_audio = True
 
 
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GREEN = ( 0, 255, 0)
-RED = ( 255, 0, 0)
-FPS = 60
-WIDTH = 600
-HEIGHT = 600
-SQUARE_SIDE = WIDTH / 8
-
-SQUARE_DIMENSIONS = (SQUARE_SIDE - 25, SQUARE_SIDE - 25)
-ICON_IMAGE_DIMENSIONS = (30, 30)
-
-board_OUTLINE_COLOR = (66, 34, 25)
-board_OUTLINE = 30
 MAIN_PIECE_IMAGE_DICT = {}
 FONT = pygame.font.SysFont(None, 24)
 BIG_FONT = pygame.font.SysFont(None, 35)
-BLUE_DOT_OFFSET = 25
-ICON_SPACING = 30
+
 
 current_possible_moves = []
 
-DEBUG_MODE = False
+
 
 
 
@@ -120,7 +106,7 @@ def display_draw(screen:pygame.surface.Surface, color=RED):
 current_possible_move_coords = []
 
 
-class Pygame_Chess_board:
+class Pygame_Chess_Board:
     def __init__(self, pos:tuple, size:float):
         self.pos = pos
         self.size = size
@@ -153,10 +139,10 @@ class Pygame_Chess_board:
         global current_possible_move_coords
         
 
-        pygame.draw.rect(screen, board_OUTLINE_COLOR, [self.pos[0] - board_OUTLINE, self.pos[1] - board_OUTLINE, 2 * board_OUTLINE + self.size, board_OUTLINE])
-        pygame.draw.rect(screen, board_OUTLINE_COLOR, [self.pos[0] - board_OUTLINE, self.pos[1] + self.size, 2 * board_OUTLINE + self.size, board_OUTLINE])
-        pygame.draw.rect(screen, board_OUTLINE_COLOR, [self.pos[0] - board_OUTLINE, self.pos[1], board_OUTLINE, self.size])
-        pygame.draw.rect(screen, board_OUTLINE_COLOR, [self.pos[0] + self.size, self.pos[1], board_OUTLINE, self.size])
+        pygame.draw.rect(screen, BOARD_OUTLINE_COLOR, [self.pos[0] - BOARD_OUTLINE, self.pos[1] - BOARD_OUTLINE, 2 * BOARD_OUTLINE + self.size, BOARD_OUTLINE])
+        pygame.draw.rect(screen, BOARD_OUTLINE_COLOR, [self.pos[0] - BOARD_OUTLINE, self.pos[1] + self.size, 2 * BOARD_OUTLINE + self.size, BOARD_OUTLINE])
+        pygame.draw.rect(screen, BOARD_OUTLINE_COLOR, [self.pos[0] - BOARD_OUTLINE, self.pos[1], BOARD_OUTLINE, self.size])
+        pygame.draw.rect(screen, BOARD_OUTLINE_COLOR, [self.pos[0] + self.size, self.pos[1], BOARD_OUTLINE, self.size])
 
         match view_direction:
             case "w":
@@ -187,7 +173,7 @@ class Pygame_Chess_board:
                 pygame.draw.circle(screen, BLUE, (coords[0] + BLUE_DOT_OFFSET, coords[1] + BLUE_DOT_OFFSET), 10, 10)
 
 
-pygame_chess_board = Pygame_Chess_board((100, 100), 400)
+pygame_chess_board = Pygame_Chess_Board((100, 100), 400)
 
 
 
@@ -279,6 +265,7 @@ class Window:
         self.widgets = []
 
         self.screen = pygame.display.set_mode(size)
+        self.undo_enabled = undo_enabled
         if undo_enabled:
             self.widgets.append(Button(screen=self.screen, text='Undo', pos=(530, 30), click_action=self.undo, background_color=(230, 230, 230)))
             stack.clear()
@@ -355,8 +342,13 @@ class Window:
     def move(self, piece: Piece, pos: tuple[int, int], is_computer=False):
         
         # piece.move(board, pos, is_computer=is_computer)
+        if self.undo_enabled:
+            stack.push(deepcopy(board))
+        
         board.coords(piece.pos).piece.move(board, pos, is_simulated=False, is_computer=is_computer)
         self.play_sound_effect(piece)
+
+        
 
     def play_sound_effect(self, piece: Piece):
 
@@ -414,7 +406,8 @@ class Window:
                 move_made = True
                 piece = selected.piece
                 #self.move(piece, coords, True)
-                piece.move(board, coords)
+                self.move(piece, coords, False)
+                # piece.move(board, coords)
                 
 
                 
@@ -425,8 +418,6 @@ class Window:
                 current_possible_moves = []
                 current_possible_move_coords = []
 
-
-                self.play_sound_effect(this_square.piece)
 
 
                 
@@ -498,15 +489,6 @@ class Window:
                 pygame.display.set_caption("Easy Chess: Black Turn")
 
 
-
-def wait_for_move(window: Window, func, *args):
-
-    piece, pos = func(*args)
-    if not window.destroyed:
-
-        window.move(piece, pos, is_computer=True)
-        window.finished_thread = True
-
 def render_widgets(func):
     def render_widget_func(self: Window, *args, **kwargs):
         return_val = func(self, *args, **kwargs)
@@ -520,18 +502,44 @@ def render_widgets(func):
     return render_widget_func
     
 
+def wait_for_move(window: Window, func, *args):
 
-class Against_Minimax_Singleplayer(Window):
+    piece, pos = func(*args)
+    if not window.destroyed:
 
+        window.move(piece, pos, is_computer=True)
+        window.finished_thread = True
+
+
+class Move_Source:
+    
+    def __init__(self, team):
+        self.team = team
+
+    def get_move(self, board: Board) -> tuple:
+        pass
+
+
+class Minimax(Move_Source):
+
+    def __init__(self, team: str, depth: int):
+        super().__init__(team)
+        self.depth = depth
+
+    def get_move(self, board: Board) -> tuple:
+        return minimax(board, self.depth)
+
+class Against_Move_Source(Window):
+    
 
     @render_widgets
     def render_function(self, events: list[pygame.event.Event]):
 
-        moves = []
 
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                moves.append(self.handle_click())
+                if not self.busy:
+                    self.handle_click()
 
 
 
@@ -543,17 +551,17 @@ class Against_Minimax_Singleplayer(Window):
         if not self.busy and board.current_turn != self.player_side and board.win_state == '':
             self.busy = True
 
-            self.thread = Thread(target= wait_for_move, args=((self, minimax, board, 2)))
+            self.thread = Thread(target = wait_for_move, args=((self, self.move_source.get_move, board)))
             self.thread.start()
 
 
 
 
 
-    def __init__(self, size: tuple[int, int], player_side: str, **kwargs):
+    def __init__(self, size: tuple[int, int], player_side: str, move_source: Move_Source, **kwargs):
         self.player_side = player_side
+        self.move_source = move_source
         super().__init__(size, self.render_function, **kwargs)
-
 
 
 class Same_PC_Multiplayer(Window):
@@ -588,7 +596,7 @@ def main():
         while True:
             match menu.menu():
                 case 'minimax':
-                    main_game(Against_Minimax_Singleplayer((600, 600), 'w'))
+                    main_game(Against_Move_Source((600, 600), 'w', Minimax('b', 2)))
                 case 'ai':
                     print ('ai')
                 case 'quickplay':

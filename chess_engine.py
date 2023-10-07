@@ -2,6 +2,7 @@
 from copy import deepcopy
 from stack import stack
 
+
 KNIGHT_VECTORS = [(2, 1), (2, -1), (1, -2), (-1, -2), (-2, 1), (-2, -1), (1, 2), (-1, 2)]
 ROOK_VECTORS = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 BISHOP_VECTORS = [(1, 1), (-1,-1), (-1, 1), (1, -1)]
@@ -273,12 +274,6 @@ class Piece:
              is_computer=False):
         
 
-        
-
-        if not is_simulated:
-            print ('this is not simulated')
-            stack.push(deepcopy(new_board))
-        
 
 
         new_board.previous_piece_to_move = self
@@ -560,8 +555,7 @@ class King(Piece):
              is_simulated=False,
              is_computer=False):
 
-        if not is_simulated:
-            print('this is not simulated')
+
 
         new_board.coords(self.pos).update_piece(None)
         

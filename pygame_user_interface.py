@@ -60,31 +60,4 @@ class Button:
         else:
             return False
 
-# def ca():
-#     print ('hello world')
 
-
-    
-# if __name__ == '__main__':
-#     clock = pygame.time.Clock()
-#     RED = (255, 0, 0)
-#     screen = pygame.display.set_mode((400, 400))
-
-#     bing_bong = Button(screen, (50, 50), ca, text='bing_bong', background_color=RED)
-#     pygame.init()
-#     while True:
-
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 pygame.quit()
-#                 exit()
-
-#             elif event.type == pygame.MOUSEBUTTONDOWN:
-                
-#                 bing_bong.check_click(pygame.mouse.get_pos())
-            
-#         screen.fill((255, 255, 255))
-#         bing_bong.render()
-        
-#         clock.tick(60)
-#         pygame.display.flip()

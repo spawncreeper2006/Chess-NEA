@@ -36,7 +36,6 @@ class Stack:
         self.pointer = 0
 
     def push(self, to_push):
-        print ('pushed to stack')
         if self.pointer == self.max_size:
             raise Exception('cannot push to full stack')
         else:
