@@ -1,9 +1,9 @@
 from constants import *
 from performance_monitor import log_performance
-from game import Against_Move_Source, Same_PC_Multiplayer, main_game
+from game import Against_Move_Source, Same_PC_Multiplayer, Quickplay_Multiplayer, main_game
 from chess_engine import board, init_board
 from move_sources import Minimax
-import menu
+import user_interface.menu as menu
 
 
 
@@ -18,7 +18,7 @@ def main():
                 case 'ai':
                     print ('ai')
                 case 'quickplay':
-                    print ('quickplay')
+                    main_game(Quickplay_Multiplayer((600, 600)))
                 case 'tournament':
                     print ('tournament')
                 case 'same pc':

@@ -1,5 +1,8 @@
 import pygame
 import typing
+import math
+sin = lambda x: math.sin(math.degrees(x))
+cos = lambda x: math.cos(math.degrees(x))
 
 
 class Button:
@@ -61,3 +64,19 @@ class Button:
             return False
 
 
+class Loading_Screen_Wheel:
+    def __init__(self, screen: pygame.surface.Surface, pos: tuple[int, int], size=50):
+        self.screen = screen
+        self.pos = pos
+        self.size = size
+        self.brightnesses = [255, 230, 205, 180, 155, 130, 105, 80]
+
+    def render(self, state: int):
+        #state is 0 to 8
+        angle = state * 10
+        for brightness in self.brightnesses:
+            centre = (self.pos[0] + self.size * cos(angle), self.pos[1] + self.size * sin(angle))
+            print (centre)
+            pygame.draw.circle(self.screen, (brightness, brightness, brightness), centre, 10)
+            #pygame.draw.circle(self.screen, (255, 255, 255), centre, 50)
+            angle += 10

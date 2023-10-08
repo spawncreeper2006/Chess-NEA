@@ -10,7 +10,7 @@ import tkinter as tk
 from typing import Callable
 from move_sources import Move_Source
 from threading import Thread
-from pygame_user_interface import Button
+from user_interface.pygame_user_interface import Button, Loading_Screen_Wheel
 from constants import *
 
 
@@ -508,6 +508,24 @@ def wait_for_move(window: Window, func, *args):
         window.finished_thread = True
 
 
+
+class Quickplay_Multiplayer(Window):
+
+    def render_function(self, events: list[pygame.event.Event]):
+        try:
+            self.screen.fill(BLACK)
+            self.lsw.render(self.state)
+            pygame.display.flip()
+            self.state += 1
+        except:
+            pass
+
+    def __init__(self, size):
+        
+        super().__init__(size, self.render_function)
+        self.lsw = Loading_Screen_Wheel(self.screen, (300, 300))
+        self.state = 0
+
 class Against_Move_Source(Window):
     
 
@@ -541,6 +559,7 @@ class Against_Move_Source(Window):
         self.player_side = player_side
         self.move_source = move_source
         super().__init__(size, self.render_function, **kwargs)
+
 
 
 class Same_PC_Multiplayer(Window):
