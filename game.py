@@ -75,20 +75,20 @@ current_possible_moves = []
 
 
 
-def screen_to_chess_coords(coords:tuple) -> tuple:
+def screen_to_chess_coords(coords: tuple) -> tuple:
     coords = coords[0] // SQUARE_SIDE, coords[1] // SQUARE_SIDE
     coords = coords[0] + 1, 7 - coords[1] + 1
     coords = int(coords[0]), int(coords[1])
     return coords
 
-def back_to_default(selected_sqaure:Square, possible_moves:tuple):
+def back_to_default(selected_sqaure: Square, possible_moves:tuple):
     global selected
     selected.back_to_default_color()
     [i.back_to_default_color() for i in possible_moves]
 
 
 
-def display_check(screen:pygame.surface.Surface, color=RED):
+def display_check(screen: pygame.surface.Surface, color=RED):
     screen.blit(BIG_FONT.render("Check", False, color), (WIDTH//2 - 40, 0))
 
 def display_checkmate(screen:pygame.surface.Surface, color=RED):
@@ -104,14 +104,14 @@ current_possible_move_coords = []
 
 
 class Pygame_Chess_Board:
-    def __init__(self, pos:tuple, size:float):
+    def __init__(self, pos: tuple, size: float):
         self.pos = pos
         self.size = size
         self.square_size = size // 8
         self.chess_coords_transform = lambda t: t
         
 
-    def screen_to_chess_coords(self, coords:tuple) -> tuple:
+    def screen_to_chess_coords(self, coords: tuple) -> tuple[int, int]:
 
         coords = coords[0] - self.pos[0], coords[1] - self.pos[1]
         coords = coords[0] // self.square_size, coords[1] // self.square_size
@@ -122,7 +122,7 @@ class Pygame_Chess_Board:
 
     
 
-    def handle_click(self, click_pos:tuple):
+    def handle_click(self, click_pos: tuple):
         
         coords = self.screen_to_chess_coords(click_pos)
 
@@ -131,7 +131,7 @@ class Pygame_Chess_Board:
         else:
             return None
         
-    def render_board(self, screen:pygame.surface.Surface, view_direction:str):
+    def render_board(self, screen: pygame.surface.Surface, view_direction: str):
 
         global current_possible_move_coords
         
@@ -231,7 +231,7 @@ if has_audio:
 
 
 
-def render_taken_piece_log(screen:pygame.surface.Surface, piece_list:list, starting_coords:tuple):
+def render_taken_piece_log(screen: pygame.surface.Surface, piece_list: list, starting_coords: tuple):
 
     coords = starting_coords
     for piece in piece_list:
@@ -509,22 +509,22 @@ def wait_for_move(window: Window, func, *args):
 
 
 
-class Quickplay_Multiplayer(Window):
+# class Quickplay_Multiplayer(Window):
 
-    def render_function(self, events: list[pygame.event.Event]):
-        try:
-            self.screen.fill(BLACK)
-            self.lsw.render(self.state)
-            pygame.display.flip()
-            self.state += 1
-        except:
-            pass
+#     def render_function(self, events: list[pygame.event.Event]):
+#         try:
+#             self.screen.fill(BLACK)
+#             self.lsw.render(self.state)
+#             pygame.display.flip()
+#             self.state += 1
+#         except:
+#             pass
 
-    def __init__(self, size):
+#     def __init__(self, size):
         
-        super().__init__(size, self.render_function)
-        self.lsw = Loading_Screen_Wheel(self.screen, (300, 300))
-        self.state = 0
+#         super().__init__(size, self.render_function)
+#         self.lsw = Loading_Screen_Wheel(self.screen, (300, 300))
+#         self.state = 0
 
 class Against_Move_Source(Window):
     
@@ -581,7 +581,7 @@ class Same_PC_Multiplayer(Window):
         super().__init__(size, self.render_function, **kwargs)
 
 
-def main_game(window:Window):
+def main_game(window: Window):
     
     while window.update():
         window.clock.tick(FPS)
