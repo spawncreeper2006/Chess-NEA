@@ -93,5 +93,3 @@ if __name__ == '__main__':
 
     # print (bytes_to_move(move_to_bytes(((1, 2), (3, 4)), 'd')))
     
-    
-

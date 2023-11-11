@@ -38,7 +38,7 @@ def get_team_move_coords(team: str,
         yield piece.pos, pos
 
 def minimax_numeric(board: Board,
-             depth: int,
+                depth: int,
              max_player: bool) -> int:
     
     lambda_minimax = lambda b: minimax_numeric(b, depth - 1, not max_player)
@@ -55,6 +55,41 @@ def minimax_numeric(board: Board,
 
     return func(map(lambda_minimax, [sim_move(board, start, end) for start, end in get_team_move_coords(team, board)]))
 
+def minimax_numeric_ab(board: Board,
+                       depth: int,
+                       max_player: bool,
+                       alpha: int,
+                       beta: int) -> int:
+    
+
+    if depth == 0:
+        return static_eval(board)
+    
+    if max_player:
+        score = -10000
+        for start, end in get_team_move_coords('w', board):
+            
+            score = max(score, minimax_numeric_ab(sim_move(board, start, end), depth - 1, False, alpha, beta))
+            alpha = max(alpha, score)
+
+            if beta <= alpha:
+                print ('pruned')
+                break
+
+    else:
+        score = 10000
+        for start, end in get_team_move_coords('b', board):
+            
+            score = min(score, minimax_numeric_ab(sim_move(board, start, end), depth - 1, True, alpha, beta))
+            beta = min(beta, score)
+
+            if beta <= alpha:
+                print ('pruned')
+                break
+
+
+    return score
+
 def minimax(board: Board,
             depth: int) -> tuple[Piece, tuple]:
     
@@ -64,7 +99,7 @@ def minimax(board: Board,
         threshold = -10_000
         for start, end in get_team_move_coords(board.current_turn, board):
             fake_board = sim_move(board, start, end)
-            move_score = minimax_numeric(fake_board, depth - 1, False)
+            move_score = minimax_numeric_ab(fake_board, depth - 1, False, -10_000, 10_000)
             if move_score > threshold:
                 threshold = move_score
                 moves = [(start, end)]
@@ -76,7 +111,7 @@ def minimax(board: Board,
         threshold = 10_000
         for start, end in get_team_move_coords(board.current_turn, board):
             fake_board = sim_move(board, start, end)
-            move_score = minimax_numeric(fake_board, depth - 1, True)
+            move_score = minimax_numeric_ab(fake_board, depth - 1, True, -10_000, 10_000)
             if move_score < threshold:
                 threshold = move_score
                 moves = [(start, end)]
