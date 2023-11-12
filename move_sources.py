@@ -1,7 +1,6 @@
 from chess_engine import Board
 from minimax import minimax
 from chess_client import Connection
-from constants import SERVER_IP, PORT
 
 class Move_Source:
     
@@ -30,7 +29,7 @@ teams = ['w', 'b']
 class Quickplay(Move_Source):
 
     def __init__(self):
-        self.conn = Connection(SERVER_IP, PORT)
+        self.conn = Connection()
         self.conn.send_int(1)
         self.conn.recieve_int() #waits for other player
         team = teams[self.conn.recieve_int()]

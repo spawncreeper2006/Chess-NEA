@@ -25,10 +25,10 @@ class Client:
 
 
     def send_int(self, data: int):
-        self.send_bytes(data.to_bytes(1))
+        self.send_bytes(data.to_bytes(1, 'little'))
 
     def recieve_int(self, length=1) -> int:
-        return int.from_bytes(self.recieve_bytes(length))
+        return int.from_bytes(self.recieve_bytes(length), 'little')
     
     
     def send_str(self, data: str):
@@ -55,4 +55,7 @@ class Client:
                 self.send_int(0)
             case 'b':
                 self.send_int(1)
+
+    def __str__(self):
+        return f'Client: {self.ip_addr}'
 

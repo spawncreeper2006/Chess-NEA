@@ -22,6 +22,8 @@ class Client_Queue:
         if self.queue.is_full():
             self.gamemode.start(self.queue.dequeue_all())
 
+        print ('new client', client)
+
 
 
 

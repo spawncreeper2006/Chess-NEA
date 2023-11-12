@@ -1,5 +1,6 @@
 from tkinter import *
 from PIL import ImageTk
+from threading import Thread
 from .loading_screen_wheel import Loading_Screen_Wheel
 
 WIDTH = 600
@@ -39,6 +40,7 @@ class Choice:
 
         if root == None:
             self.type = 'simple'
+            self.root = None
         else:
             self.type = 'complex'
             self.root = root
@@ -105,6 +107,8 @@ class Quickplay(Menu):
         canvas = Canvas(root, width=WIDTH, height=HEIGHT // 2)
         canvas.place(x=0, y=HEIGHT // 2)
         Loading_Screen_Wheel(canvas, 30, (WIDTH//2, HEIGHT//4), 100)
+
+
 
 
 '''

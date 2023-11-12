@@ -4,7 +4,9 @@ import socket
 PORT = 5050
 FORMAT = 'utf-8'
 HEADER = 8
-SERVER_IP = '192.168.56.1'
+
+SERVER_IP = '192.168.1.220'
+#SERVER_IP = '192.168.56.1'
 
 
 def move_to_bytes(move: tuple[tuple[int, int], tuple[int, int]], board_state: str) -> bytes:
@@ -40,7 +42,7 @@ def bytes_to_move(_bytes: bytes) -> tuple[tuple[int, int], tuple[int, int]]:
 
 class Connection(socket.socket):
     
-    def __init__(self, server: str, port: int):
+    def __init__(self, server=SERVER_IP, port=PORT):
         
         self.server = server
         self.port = port
@@ -61,10 +63,10 @@ class Connection(socket.socket):
 
 
     def send_int(self, data: int):
-        self.send_bytes(data.to_bytes(1))
+        self.send_bytes(data.to_bytes(1, 'little'))
 
     def recieve_int(self, length = 1) -> int:
-        return int.from_bytes(self.recieve_bytes(length))
+        return int.from_bytes(self.recieve_bytes(length), 'little')
     
     
     def send_str(self, data: str):
@@ -89,6 +91,22 @@ class Connection(socket.socket):
         return bytes_to_move(self.recieve_bytes(2))
 
 
+def establish_quickplay_connection() -> tuple[Connection, str]:
+    conn = Connection()
+    conn.send_int(1)
+    team_num = conn.recieve_int()
+    match team_num:
+        case 1:
+            team = 'w'
+        case 2:
+            team = 'b'
+
+    return conn, team
+
+def establish_tournament_connection() -> Connection:
+    conn = Connection()
+    conn.send_int(2)
+    return conn
 
 if __name__ == '__main__':
 
