@@ -5,8 +5,8 @@ PORT = 5050
 FORMAT = 'utf-8'
 HEADER = 8
 
-SERVER_IP = '192.168.1.220'
-#SERVER_IP = '192.168.56.1'
+#SERVER_IP = '192.168.1.134'
+SERVER_IP = '192.168.56.1'
 
 
 def move_to_bytes(move: tuple[tuple[int, int], tuple[int, int]], board_state: str) -> bytes:
@@ -56,7 +56,6 @@ class Connection(socket.socket):
 
     def recieve_bytes(self, length: int) -> bytes:
         data = self.recv(length)
-        print (data)
         while not data:
             self.recv(length)
         return data
@@ -94,11 +93,12 @@ class Connection(socket.socket):
 def establish_quickplay_connection() -> tuple[Connection, str]:
     conn = Connection()
     conn.send_int(1)
+    conn.recieve_int()
     team_num = conn.recieve_int()
     match team_num:
-        case 1:
+        case 0:
             team = 'w'
-        case 2:
+        case 1:
             team = 'b'
 
     return conn, team

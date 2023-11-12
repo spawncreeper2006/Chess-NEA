@@ -46,7 +46,9 @@ class Circular_Queue:
     
     def dequeue_all(self):
 
-        if self.start == self.end:
+        if self.is_full():
+            to_return = self.data[self.start:] + self.data[:self.end]
+        elif self.start == self.end:
             to_return = []
         elif self.start < self.end:
             to_return = self.data[self.start: self.end]
@@ -60,10 +62,19 @@ class Circular_Queue:
         
 
     def __str__(self):
-        if self.start == self.end:
+        if self.is_full():
+            return str(self.data[self.start:] + self.data[:self.end])
+        elif self.start == self.end:
             return str([])
         elif self.start < self.end:
             return str(self.data[self.start: self.end])
         else:
             return str(self.data[self.start:] + self.data[:self.end])
         
+if __name__ == '__main__':
+    q = Circular_Queue(2)
+    q.enqueue('a')
+    q.enqueue('b')
+    print (q.dequeue_all())
+
+    

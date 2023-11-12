@@ -12,7 +12,9 @@ import user_interface.menu as menu
 
 def quickplay_conn(kill: Callable) -> tuple[Connection, str]:
     conn, team = establish_quickplay_connection()
+    print ('connected')
     kill()
+    print ('connected')
     return conn, team
 
 
