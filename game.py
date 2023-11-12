@@ -10,7 +10,7 @@ import tkinter as tk
 from typing import Callable
 from move_sources import Move_Source
 from threading import Thread
-from user_interface.pygame_user_interface import Button, Loading_Screen_Wheel
+from user_interface.pygame_user_interface import Button
 from constants import *
 
 

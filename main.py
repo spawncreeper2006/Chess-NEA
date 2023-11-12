@@ -30,7 +30,7 @@ def main():
             else:
                 match choice.text:
                     case 'quickplay':
-                        Quickplay(choice.root)
+                        Quickplay(choice.root).run()
                     case 'tournament':
                         print ('tournament')
 

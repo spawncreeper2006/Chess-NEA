@@ -1,5 +1,5 @@
+
 from tkinter import Canvas
-import tkinter as tk
 
 
 PI = 3.141592654
@@ -76,16 +76,3 @@ class Loading_Screen_Wheel:
 
         self.canvas.after(self.refresh_rate_ms, self.run_loading_screen)
 
-        # time.sleep(self.refresh_rate_ms / 1000)
-
-
-
-if __name__ == '__main__':
-    root = tk.Tk()
-    root.geometry('400x400')
-    canvas = tk.Canvas(root, width=200, height=200, borderwidth=0, highlightthickness=0, bg="black")
-    canvas.pack()
-
-    lsw = Loading_Screen_Wheel(canvas, 30, (100, 100), 100)
-
-    root.mainloop()

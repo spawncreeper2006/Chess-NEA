@@ -27,7 +27,7 @@ class Client:
     def send_int(self, data: int):
         self.send_bytes(data.to_bytes(1))
 
-    def recieve_int(self, length = 1) -> int:
+    def recieve_int(self, length=1) -> int:
         return int.from_bytes(self.recieve_bytes(length))
     
     
@@ -39,7 +39,7 @@ class Client:
         self.send_bytes(send_length)
         self.send_bytes(message)
 
-    def recieve_str(self):
+    def recieve_str(self) -> str:
 
         msg_length = self.recieve_bytes(HEADER).decode(FORMAT)
         msg_length = int(msg_length)
@@ -48,7 +48,7 @@ class Client:
     def send_lobby_size(self, lobby_size: int):
         self.send_int(lobby_size)
 
-    def send_start_signal(self, team):
+    def send_start_signal(self, team: str):
         self.send_int(255)
         match team:
             case 'w':

@@ -1,6 +1,11 @@
 import socket
-from constants import FORMAT, HEADER
-from chess_engine import Board
+
+#NETWORKING
+PORT = 5050
+FORMAT = 'utf-8'
+HEADER = 8
+SERVER_IP = '192.168.56.1'
+
 
 def move_to_bytes(move: tuple[tuple[int, int], tuple[int, int]], board_state: str) -> bytes:
     #move has two tuples with x and y from 1 to 8
@@ -15,7 +20,7 @@ def move_to_bytes(move: tuple[tuple[int, int], tuple[int, int]], board_state: st
             move_num += 2 ** 13
     return move_num.to_bytes(2)
 
-def bytes_to_move(_bytes) -> tuple[tuple[int, int], tuple[int, int]]:
+def bytes_to_move(_bytes: bytes) -> tuple[tuple[int, int], tuple[int, int]]:
     move_num = int.from_bytes(_bytes)
     move_num %= 2 ** 12
     move = [[0, 0], [0, 0]]
@@ -76,11 +81,11 @@ class Connection(socket.socket):
         msg_length = int(msg_length)
         return self.recieve_bytes(msg_length).decode(FORMAT)
 
-    def send_move(self, board: Board):
-        self.send(move_to_bytes(board.previous_move, board.win_state))
+    def send_move(self, start: tuple[int, int], dest: tuple[int, int]):
+        self.send(move_to_bytes(start, dest))
 
 
-    def recieve_move(self):
+    def recieve_move(self) -> tuple[tuple[int, int], tuple[int, int]]:
         return bytes_to_move(self.recieve_bytes(2))
 
 

@@ -1,6 +1,6 @@
 from tkinter import *
 from PIL import ImageTk
-from loading_screen_wheel import Loading_Screen_Wheel
+from .loading_screen_wheel import Loading_Screen_Wheel
 
 WIDTH = 600
 HEIGHT = 600
@@ -93,10 +93,18 @@ class Multiplayer(Menu):
 
 class Quickplay(Menu):
     def __init__(self, root: Tk):
+
         super().__init__(root)
+        for widget in root.winfo_children():
+            widget.destroy()
+
+
+        #Text(root, text='Waiting for Players').place(x=10, y=10)
+        
+        Label(root, text='Waiting For Players...', font=('Calibri 20')).place(x=WIDTH // 2 - 100, y=130)
         canvas = Canvas(root, width=WIDTH, height=HEIGHT // 2)
         canvas.place(x=0, y=HEIGHT // 2)
-        Loading_Screen_Wheel(canvas, 10, (50, 50), 50)
+        Loading_Screen_Wheel(canvas, 30, (WIDTH//2, HEIGHT//4), 100)
 
 
 '''
@@ -141,5 +149,6 @@ def menu() -> Choice:
             
             case _:
                 return Choice('quit')
+            
 
 
