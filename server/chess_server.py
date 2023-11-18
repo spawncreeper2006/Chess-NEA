@@ -7,7 +7,7 @@ from network_constants import ADDR, SERVER
 
 def check_win_state(data: bytes) -> str:
 
-    num = int.from_bytes(data)
+    num = int.from_bytes(data, 'little')
     if num >= 2 ** 13:
         return 'w'
     elif num >= 2 ** 12:
@@ -50,7 +50,6 @@ class Quickplay(Gamemode):
         super().__init__(2)
 
     def start(self, clients: list):
-        print (clients)
         self.play_match(clients[0], clients[1])
 
 

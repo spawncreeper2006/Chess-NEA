@@ -53,4 +53,41 @@ class Stack:
     def __str__(self):
         return str(self.__array[:self.pointer])
 
+
+class NP_Stack:
+    def __init__(self, max_size: int):
+        self.max_size = max_size
+        self.__array = np.zeros(max_size, 'int16')
+        self.__pointer = 0
+
+    def is_full(self) -> bool:
+        return self.__pointer == self.max_size
+    
+    def is_empty(self) -> bool:
+        return self.__pointer == 0
+    
+
+
+    def push(self, move_num: int):
+        if self.is_full():
+            raise Exception('cannot push to a full stack')
+        else:
+            self.__array[self.__pointer] = move_num
+            self.__pointer += 1
+
+    def peek(self) -> int:
+        if self.is_empty():
+            raise Exception('cannot peek an empty stack')
+        return self.__array[self.__pointer - 1]
+
+    def pop(self) -> int:
+        if self.is_empty():
+            raise Exception('cannot pop from an empty stack')
+        else:
+            self.__pointer -= 1
+            return self.__array[self.__pointer]
+        
+    def __str__(self):
+        return str(self.__array[:self.__pointer])
+
 stack = Stack(1000)

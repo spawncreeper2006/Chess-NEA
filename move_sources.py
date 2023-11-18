@@ -4,7 +4,7 @@ from chess_client import Connection
 
 class Move_Source:
     
-    def __init__(self, team):
+    def __init__(self, team: str):
         self.team = team
 
     def get_move(self, board: Board) -> tuple:
@@ -28,15 +28,18 @@ teams = ['w', 'b']
 
 class Quickplay(Move_Source):
 
-    def __init__(self):
-        self.conn = Connection()
-        self.conn.send_int(1)
-        self.conn.recieve_int() #waits for other player
-        team = teams[self.conn.recieve_int()]
-        super().__init__(team)
+    def __init__(self, conn: Connection):
+        self.conn = conn
+        super().__init__('')
     
     def get_move(self, board: Board) -> tuple:
-        self.conn.send_move(board)
-        return self.conn.recieve_move()
-    
+        if not board.previous_move == ():
+
+            start, dest = board.previous_move
+            self.conn.send_move(start, dest, board.win_state)
+        
+        start, dest = self.conn.recieve_move()
+
+        return (board.coords(start).piece, dest)
+        
     

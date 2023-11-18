@@ -1,6 +1,6 @@
 
 from copy import deepcopy
-from stack import stack
+from stack import stack, NP_Stack
 
 
 KNIGHT_VECTORS = [(2, 1), (2, -1), (1, -2), (-1, -2), (-2, 1), (-2, -1), (1, 2), (-1, 2)]
@@ -18,14 +18,104 @@ sep = lambda: print(SEP)
 
 
 
-def in_board(pos:tuple) -> bool:
+def in_board(pos: tuple) -> bool:
     for xy in pos:
         if xy < 1 or xy > 8:
             return False
 
     return True
 
-def get_team_moves(team:str, this_board):
+
+
+class Move:
+
+    def __init__(self, start: tuple[int, int], dest: tuple[int, int], flags: tuple = (), board = None):
+        self.start = start
+        self.dest = dest
+        self.flags = flags
+        self.piece = ''
+        if board != None:
+            self.piece = board.coords(start).piece.piece_identifier
+
+
+    def from_int(move_num: int):
+        flag_dict = {0: (),
+            1: ('WIN'),
+            2: ('DRAW'),
+            3: ('TIMEOUT'),
+            4: ('TAKE'),
+            5: ('QS_CASTLE'),
+            6: ('KS_CASTLE'),
+            7: ('KNIGHT'),
+            8: ('BISHOP'),
+            9: ('ROOK'),
+            10: ('QUEEN'),
+            11: ('TAKE', 'KNIGHT'),
+            12: ('TAKE', 'BISHOP'),
+            13: ('TAKE', 'ROOK'),
+            14: ('TAKE', 'QUEEN')}
+        
+        
+        move = [[0, 0], [0, 0]]
+
+        move_num, move[0][0] = divmod(move_num, 8)
+        move_num, move[0][1] = divmod(move_num, 8)
+        move_num, move[1][0] = divmod(move_num, 8)
+        move_num, move[1][1] = divmod(move_num, 8)
+        flags = flag_dict[move_num]
+
+        move[0][0] += 1
+        move[0][1] += 1
+        move[1][0] += 1
+        move[1][1] += 1
+
+        return Move(tuple(move[0]), tuple(move[1]), flags)
+
+    def from_bytes(_bytes: bytes):
+        
+        return Move.from_int(int.from_bytes(_bytes, 'little'))
+
+    
+    def to_int(self) -> int:
+        flag_dict = {(): 0,
+            ('WIN'): 1,
+            ('DRAW'): 2,
+            ('TIMEOUT'): 3,
+            ('TAKE'): 4,
+            ('QS_CASTLE'): 5,
+            ('KS_CASTLE'): 6,
+            ('KNIGHT'): 7,
+            ('BISHOP'): 8,
+            ('ROOK'): 9,
+            ('QUEEN'): 10,
+            ('TAKE', 'KNIGHT'): 11,
+            ('TAKE', 'BISHOP'): 12,
+            ('TAKE', 'ROOK'): 13,
+            ('TAKE', 'QUEEN'): 14}
+        
+        #move has two tuples with x and y from 1 to 8
+        move_num = (self.start[0] - 1)
+        move_num += (self.start[1] - 1) * (2 ** 3)
+        move_num += (self.dest[0] - 1) * (2 ** 6)
+        move_num += (self.dest[1] - 1) * (2 ** 9)
+        move_num += flag_dict[self.flags] * (2 ** 12)
+
+        return move_num
+    
+    def to_bytes(self) -> bytes:
+        
+        return self.to_int().to_bytes(2, 'little')
+    
+    def __str__(self):
+        if self.piece:
+            return f'{self.piece} @ {self.start} -> {self.dest}'
+        else:
+            return f'{self.start} -> {self.dest}'
+
+    
+
+
+def get_team_moves(team: str, this_board):
     moves = []
     team_pieces = []
     match team:
@@ -164,8 +254,11 @@ class Board:
         self.taken_white_pieces = []
         self.taken_black_pieces = []
         self.king_pos = {}
-        self.previous_piece_to_move = None
-        self.previous_move = ()
+        #self.previous_piece_to_move = None
+        #self.previous_move = ()
+        #self.previous_move = None
+        self.stack = NP_Stack(500)
+        
 
 
     def change_current_turn(self):
@@ -175,7 +268,7 @@ class Board:
             case 'b':
                 self.current_turn = 'w'
 
-    def translate_position(self, pos:tuple) -> tuple:
+    def translate_position(self, pos: tuple) -> tuple:
         pos = (pos[0]-1, pos[1]-1)
         return pos[0]+pos[1]*8
 
@@ -268,16 +361,17 @@ class Piece:
         
 
     def move(self,
-             new_board:Board,
-             new_pos:tuple,
+             new_board: Board,
+             new_pos: tuple,
              is_simulated=False,
              flip_board=True,
              is_computer=False):
         
 
 
-        new_board.previous_move = (self.pos, new_pos)
-        new_board.previous_piece_to_move = self
+        # new_board.previous_move = (self.pos, new_pos)
+        # new_board.previous_piece_to_move = self
+        previous_move = Move(self.pos, new_pos, board=new_board)
 
         new_board.coords(self.pos).update_piece(None)
         
@@ -340,7 +434,18 @@ class Piece:
                     new_piece = Queen
                 else:
                     new_piece = new_board.ask_for_promotion()
-                new_piece(new_board, team, self.pos)
+
+                
+                piece = new_piece(new_board, team, self.pos)
+                match piece.piece_identifier[1:]:
+                    case 'Kn':
+                        new_board.previous_move.flag = 'KNIGHT'
+                    case 'B':
+                        new_board.previous_move.flag = 'BISHOP'
+                    case 'R':
+                        new_board.previous_move.flag = 'ROOK'
+                    case 'Q':
+                        new_board.previous_move.flag = 'QUEEN'
 
 
         in_check = king_in_check(new_board)
@@ -353,16 +458,23 @@ class Piece:
             if not cm:
 
                 if in_check:
-                    board.win_state = other_team(new_board.current_turn)
+                    new_board.win_state = other_team(new_board.current_turn)
 
                 else:
-                    board.win_state = 'd'
+                    new_board.win_state = 'd'
 
+        if new_board.win_state != '':
+            if new_board.win_state == 'd':
+                previous_move.flag = 'DRAW'
+            else:
+                previous_move.flag = 'WIN'
+
+        new_board.stack.push(previous_move.to_int())
 
         return new_board
 
     def same_color(self,
-                   color:str) -> bool:
+                   color: str) -> bool:
         return self.color==color
 
     def __str__(self):
@@ -395,7 +507,7 @@ class Piece:
                 return True
         
         return False
-
+    
 class Pawn(Piece):
     def __init__(self, board, color:str, pos:tuple):
         super().__init__(board, color, pos, 'p')
@@ -546,17 +658,20 @@ class Queen(Piece):
         return self.get_moves(board)
 
 class King(Piece):
-    def __init__(self, board, color:str, pos:tuple):
+    def __init__(self, board, color: str, pos: tuple):
         super().__init__(board, color, pos, 'k')
         board.king_pos[color] = pos
 
     def move(self,
-             new_board:Board,
-             new_pos:tuple,
+             new_board: Board,
+             new_pos: tuple,
              is_simulated=False,
              is_computer=False):
 
+        # new_board.previous_move = (self.pos, new_pos)
+        # new_board.previous_piece_to_move = self
 
+        previous_move = Move(self.pos, new_pos, board=new_board)
 
         new_board.coords(self.pos).update_piece(None)
         
@@ -604,9 +719,13 @@ class King(Piece):
 
                 if in_check:
                     board.win_state = other_team(new_board.current_turn)
+                    previous_move.flag = 'WIN'
 
                 else:
                     board.win_state = 'd'
+                    previous_move.flag = 'DRAW'
+
+        new_board.stack.push(previous_move.to_int())
         return new_board
 
     def get_moves(self, board:Board) -> set:
@@ -698,3 +817,9 @@ def init_board(board: Board):
 board = Board()
 init_board(board)
 
+
+if __name__ == '__main__':
+    x = Move((8, 9), (2, 2))
+    num = x.to_int()
+    print (Move.from_int(num))
+    

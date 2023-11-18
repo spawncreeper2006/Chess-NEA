@@ -6,38 +6,56 @@ FORMAT = 'utf-8'
 HEADER = 8
 
 #SERVER_IP = '192.168.1.134'
-SERVER_IP = '192.168.56.1'
+#SERVER_IP = '192.168.56.1'
+    
+#for testing:
+SERVER_IP = socket.gethostbyname(socket.gethostname())
 
-
-def move_to_bytes(move: tuple[tuple[int, int], tuple[int, int]], board_state: str) -> bytes:
+def move_to_bytes(move: tuple[tuple[int, int], tuple[int, int]], flag: str = '') -> bytes:
+    flag_dict = {'': 0,
+                 'WIN': 1,
+                 'DRAW': 2,
+                 'TIMEOUT': 3,
+                 'KNIGHT': 4,
+                 'BISHOP': 5,
+                 'ROOK': 6,
+                 'QUEEN': 7}
     #move has two tuples with x and y from 1 to 8
     move_num = (move[0][0] - 1)
     move_num += (move[0][1] - 1) * (2 ** 3)
     move_num += (move[1][0] - 1) * (2 ** 6)
     move_num += (move[1][1] - 1) * (2 ** 9)
-    if board_state:
-        if board_state == 'd':
-            move_num += 2 ** 12
-        else:
-            move_num += 2 ** 13
-    return move_num.to_bytes(2)
+    move_num += flag_dict[flag] * (2 ** 12)
 
-def bytes_to_move(_bytes: bytes) -> tuple[tuple[int, int], tuple[int, int]]:
-    move_num = int.from_bytes(_bytes)
-    move_num %= 2 ** 12
+    return move_num.to_bytes(2, 'little')
+
+def bytes_to_move(_bytes: bytes) -> tuple[tuple[tuple[int, int], tuple[int, int]], str]:
+
+    flag_dict = {0: '',
+                1: 'WIN',
+                2: 'DRAW',
+                3: 'TIMEOUT',
+                4: 'KNIGHT',
+                5: 'BISHOP',
+                6: 'ROOK',
+                7: 'QUEEN'}
+
+    move_num = int.from_bytes(_bytes, 'little')
     move = [[0, 0], [0, 0]]
 
     move_num, move[0][0] = divmod(move_num, 8)
     move_num, move[0][1] = divmod(move_num, 8)
     move_num, move[1][0] = divmod(move_num, 8)
-    move[1][1] = move_num
+    move_num, move[1][1] = divmod(move_num, 8)
+    flag = move_num
+    print (flag)
 
     move[0][0] += 1
     move[0][1] += 1
     move[1][0] += 1
     move[1][1] += 1
 
-    return (move[0][0], move[0][1]), (move[1][0], move[1][1])
+    return (move[0][0], move[0][1]), (move[1][0], move[1][1]), flag_dict[flag]
     
 
 class Connection(socket.socket):
@@ -82,8 +100,9 @@ class Connection(socket.socket):
         msg_length = int(msg_length)
         return self.recieve_bytes(msg_length).decode(FORMAT)
 
-    def send_move(self, start: tuple[int, int], dest: tuple[int, int]):
-        self.send(move_to_bytes(start, dest))
+    def send_move(self, start: tuple[int, int], dest: tuple[int, int], board_state: str):
+
+        self.send(move_to_bytes((start, dest), board_state))
 
 
     def recieve_move(self) -> tuple[tuple[int, int], tuple[int, int]]:
@@ -111,8 +130,10 @@ def establish_tournament_connection() -> Connection:
 if __name__ == '__main__':
 
 
-    conn = Connection('192.168.56.1', 5050)
-    conn.send_int(1)
+    b = move_to_bytes(((1, 2), (3, 4)), 'bean')
+    
+    # print (b)
+    print (bytes_to_move(b))
 
     # print (bytes_to_move(move_to_bytes(((1, 2), (3, 4)), 'd')))
     

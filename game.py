@@ -509,22 +509,6 @@ def wait_for_move(window: Window, func, *args):
 
 
 
-# class Quickplay_Multiplayer(Window):
-
-#     def render_function(self, events: list[pygame.event.Event]):
-#         try:
-#             self.screen.fill(BLACK)
-#             self.lsw.render(self.state)
-#             pygame.display.flip()
-#             self.state += 1
-#         except:
-#             pass
-
-#     def __init__(self, size):
-        
-#         super().__init__(size, self.render_function)
-#         self.lsw = Loading_Screen_Wheel(self.screen, (300, 300))
-#         self.state = 0
 
 class Against_Move_Source(Window):
     

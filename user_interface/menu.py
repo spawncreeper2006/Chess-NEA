@@ -93,8 +93,22 @@ class Multiplayer(Menu):
         Button(self.root, text='             Same PC         ', font=('Ariel', 15), justify='center', command=self.return_and_stop('same pc')).place(x=WIDTH//2 - 100, y=380)
         Button(self.root, text='                Back            ', font=('Ariel', 15), justify='center', command=self.return_and_stop('back')).place(x=WIDTH//2 - 100, y=480)
 
-class Quickplay(Menu):
-    def __init__(self, root: Tk):
+class Quickplay_Menu(Menu):
+
+    def wait_until_player_found(self):
+        
+        if self.connection_found:
+            self.root.destroy()
+        else:
+            self.root.after(self.wait_delay, self.wait_until_player_found)
+
+        
+
+    def kill_ui(self):
+        self.connection_found = True
+        print ('this was called')
+
+    def __init__(self, root: Tk, wait_delay: int = 500):
 
         super().__init__(root)
         for widget in root.winfo_children():
@@ -107,6 +121,12 @@ class Quickplay(Menu):
         canvas = Canvas(root, width=WIDTH, height=HEIGHT // 2)
         canvas.place(x=0, y=HEIGHT // 2)
         Loading_Screen_Wheel(canvas, 30, (WIDTH//2, HEIGHT//4), 100)
+        self.wait_delay = wait_delay
+        self.connection_found = False
+
+        self.root.after(0, self.wait_until_player_found)
+        
+    
 
 
 
@@ -142,6 +162,9 @@ def menu() -> Choice:
             case 'multiplayer':
 
                 x = Multiplayer(root).run()
+                if x == 'same pc':
+                    root.destroy()
+                    return Choice('same pc')
                 if x == 'back':
                     continue
 

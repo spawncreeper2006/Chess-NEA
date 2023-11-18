@@ -1,183 +1,269 @@
-         25531 function calls (24433 primitive calls) in 12.726 seconds
+         43921 function calls (38223 primitive calls) in 11.172 seconds
 
    Ordered by: internal time
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        4   12.120    3.030   12.275    3.069 {method 'mainloop' of '_tkinter.tkapp' objects}
-     1090    0.344    0.000    0.344    0.000 {method 'call' of '_tkinter.tkapp' objects}
-        2    0.216    0.108    0.216    0.108 {built-in method _tkinter.create}
-      100    0.006    0.000    0.127    0.001 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\loading_screen_wheel.py:60(draw_loading_screen)
-      800    0.005    0.000    0.067    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2824(_create)
-      832    0.004    0.000    0.011    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1524(_options)
-      800    0.004    0.000    0.005    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\loading_screen_wheel.py:45(<listcomp>)
-        1    0.004    0.004   12.726   12.726 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\main.py:22(main)
-      848    0.004    0.000    0.006    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:102(_cnfmerge)
-      800    0.002    0.000    0.008    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\loading_screen_wheel.py:44(rgb_to_hex)
-      113    0.001    0.000    0.002    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1569(_register)
-     3736    0.001    0.000    0.001    0.000 {built-in method builtins.isinstance}
-      100    0.001    0.000    0.132    0.001 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\loading_screen_wheel.py:67(run_loading_screen)
-      800    0.001    0.000    0.068    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2852(create_oval)
-     2400    0.001    0.000    0.001    0.000 {built-in method builtins.hex}
-     1664    0.001    0.000    0.001    0.000 {method 'update' of 'dict' objects}
-     1632    0.001    0.000    0.001    0.000 {built-in method _tkinter._flatten}
-      100    0.001    0.000    0.001    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\loading_screen_wheel.py:62(<listcomp>)
-      104    0.001    0.000    0.155    0.001 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1943(__call__)
-      117    0.001    0.000    0.001    0.000 {method 'createcommand' of '_tkinter.tkapp' objects}
-     2400    0.001    0.000    0.001    0.000 {method 'zfill' of 'str' objects}
-      100    0.001    0.000    0.044    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2877(delete)
-      101    0.001    0.000    0.004    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:847(after)
- 1096/136    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\loading_screen_wheel.py:8(fact)
-      117    0.000    0.000    0.001    0.000 {method 'deletecommand' of '_tkinter.tkapp' objects}
-      810    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
-      100    0.000    0.000    0.133    0.001 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:859(callit)
-        8    0.000    0.000    0.000    0.000 {built-in method nt.stat}
-      816    0.000    0.000    0.000    0.000 {method 'getint' of '_tkinter.tkapp' objects}
-      886    0.000    0.000    0.000    0.000 {built-in method builtins.callable}
-        2    0.000    0.000    0.217    0.109 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2306(__init__)
-      852    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
-      100    0.000    0.000    0.001    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:690(deletecommand)
-       16    0.000    0.000    0.054    0.003 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2616(__init__)
-        5    0.000    0.000    0.000    0.000 {method 'acquire' of '_thread.lock' objects}
-       16    0.000    0.000    0.010    0.001 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2633(destroy)
-      4/2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:1209(_handle_fromlist)
-        4    0.000    0.000    0.078    0.019 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:4060(__init__)
-       16    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2586(_setup)
-        2    0.000    0.000    0.022    0.011 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2364(destroy)
-      113    0.000    0.000    0.000    0.000 {built-in method builtins.repr}
-        4    0.000    0.000    0.127    0.032 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\menu.py:54(__init__)
-      113    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1937(__init__)
-     80/8    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\loading_screen_wheel.py:26(cos_aprox)
-     72/8    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\loading_screen_wheel.py:18(sin_aprox)
-       32    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\chess_engine.py:212(__init__)
-      100    0.000    0.000    0.000    0.000 {method 'remove' of 'list' objects}
+      459    8.456    0.018    8.456    0.018 {method 'tick' of 'pygame.time.Clock' objects}
+        3    1.972    0.657    1.992    0.664 {method 'mainloop' of '_tkinter.tkapp' objects}
+       74    0.196    0.003    0.196    0.003 {method 'call' of '_tkinter.tkapp' objects}
+        2    0.138    0.069    0.138    0.069 {built-in method _tkinter.create}
+      460    0.102    0.000    0.102    0.000 {built-in method pygame.event.get}
+        1    0.080    0.080    0.115    0.115 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:258(__init__)
+        1    0.072    0.072    0.072    0.072 {built-in method pygame.base.quit}
+        1    0.026    0.026    0.028    0.028 {built-in method pygame.display.set_mode}
+   5111/3    0.026    0.000    0.052    0.017 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\copy.py:128(deepcopy)
+        1    0.015    0.015    8.731    8.731 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:568(main_game)
+        1    0.013    0.013   11.172   11.172 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\main.py:28(main)
+      128    0.010    0.000    0.010    0.000 {method 'blit' of 'pygame.surface.Surface' objects}
+    295/3    0.006    0.000    0.052    0.017 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\copy.py:227(_deepcopy_dict)
+      460    0.006    0.000    0.188    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:310(update)
+    292/3    0.004    0.000    0.052    0.017 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\copy.py:259(_reconstruct)
+      488    0.003    0.000    0.014    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\copy.py:210(_deepcopy_tuple)
+        4    0.002    0.001    0.002    0.001 {built-in method pygame.display.flip}
+      488    0.002    0.000    0.010    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\copy.py:211(<listcomp>)
+    10334    0.002    0.000    0.002    0.000 {method 'get' of 'dict' objects}
+        4    0.002    0.000    0.002    0.000 {method 'acquire' of '_thread.lock' objects}
+        4    0.002    0.000    0.015    0.004 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:134(render_board)
+      488    0.002    0.000    0.002    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:149(add_coords)
+      484    0.002    0.000    0.004    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:465(valid_move)
+     6817    0.001    0.000    0.001    0.000 {built-in method builtins.id}
+      258    0.001    0.000    0.001    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:114(screen_to_chess_coords)
+      272    0.001    0.000    0.001    0.000 {built-in method pygame.draw.rect}
+      664    0.001    0.000    0.002    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:263(coords)
+     3829    0.001    0.000    0.001    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\copy.py:182(_deepcopy_atomic)
+      602    0.001    0.000    0.001    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\copy.py:243(_keep_alive)
+     15/9    0.001    0.000    0.051    0.006 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\copy.py:201(_deepcopy_list)
+        1    0.001    0.001    0.001    0.001 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:827(__init__)
+      664    0.001    0.000    0.001    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:254(translate_position)
+      584    0.001    0.000    0.002    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\copy.py:264(<genexpr>)
+      492    0.001    0.000    0.001    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:258(in_board)
+        4    0.001    0.000    0.017    0.004 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:439(render_screen)
+        4    0.001    0.000    0.001    0.000 {built-in method pygame.display.set_caption}
+      292    0.001    0.000    0.001    0.000 {method '__reduce_ex__' of 'object' objects}
+       56    0.001    0.000    0.002    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:541(get_possible_attack_moves)
+      494    0.001    0.000    0.001    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:21(in_board)
+        4    0.001    0.000    0.001    0.000 {method 'fill' of 'pygame.surface.Surface' objects}
+        4    0.001    0.000    0.084    0.021 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:516(render_function)
+        2    0.001    0.000    2.312    1.156 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\user_interface\menu.py:144(menu)
+      488    0.001    0.000    0.001    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:154(<listcomp>)
+        7    0.000    0.000    0.009    0.001 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:116(get_team_attack_moves)
+       10    0.000    0.000    0.000    0.000 {built-in method nt.stat}
+        3    0.000    0.000    0.099    0.033 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\user_interface\menu.py:54(__init__)
+        7    0.000    0.000    0.001    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:709(get_moves)
+      102    0.000    0.000    0.001    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\ntpath.py:150(splitdrive)
+       14    0.000    0.000    0.002    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:556(get_moves)
+       50    0.000    0.000    0.001    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\ntpath.py:206(split)
+        2    0.000    0.000    0.050    0.025 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\user_interface\menu.py:9(centre)
+        2    0.000    0.000    0.063    0.032 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:365(handle_click)
+        1    0.000    0.000    0.003    0.003 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:916(start)
+       12    0.000    0.000    0.010    0.001 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2606(destroy)
+      292    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\copyreg.py:100(__newobj__)
+       24    0.000    0.000    0.001    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1497(_options)
+       32    0.000    0.000    0.001    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:288(__init__)
+       14    0.000    0.000    0.001    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:599(get_moves)
+     1189    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+       24    0.000    0.000    0.001    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\ntpath.py:103(join)
+        7    0.000    0.000    0.001    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:623(get_moves)
+     1225    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:759(<listcomp>)
+        2    0.000    0.000    0.139    0.070 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2279(__init__)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:102(get_team_moves)
+       12    0.000    0.000    0.031    0.003 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2589(__init__)
+      603    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+        2    0.000    0.000    0.065    0.033 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\user_interface\menu.py:74(__init__)
+       14    0.000    0.000    0.001    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:574(get_moves)
+        2    0.000    0.000    0.000    0.000 {built-in method io.open}
+        2    0.000    0.000    0.046    0.023 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2337(destroy)
+      4/3    0.000    0.000    0.024    0.008 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:346(move)
+      565    0.000    0.000    0.000    0.000 {built-in method builtins.hasattr}
+     1164    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+       12    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2559(_setup)
+      4/2    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:1053(_handle_fromlist)
+        3    0.000    0.000    0.060    0.020 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:136(does_not_endanger_king)
+      340    0.000    0.000    0.000    0.000 {method 'update' of 'dict' objects}
+        1    0.000    0.000    0.001    0.001 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pygame\sysfont.py:368(font_constructor)
+       15    0.000    0.000    0.001    0.000 {method 'deletecommand' of '_tkinter.tkapp' objects}
+        1    0.000    0.000    0.001    0.001 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:754(init_board)
+       11    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1542(_register)
+       64    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:188(__init__)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:515(get_moves)
+       90    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:324(<lambda>)
+        2    0.000    0.000    0.189    0.095 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\user_interface\menu.py:22(create_root)
+       36    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:101(_cnfmerge)
+       14    0.000    0.000    0.001    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:657(destroy)
+        1    0.000    0.000    0.002    0.002 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:288(wait)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:84(back_to_default)
+        3    0.000    0.000    0.071    0.024 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:4033(__init__)
         2    0.000    0.000    0.000    0.000 {built-in method builtins.exec}
-      264    0.000    0.000    0.000    0.000 {built-in method builtins.hasattr}
-       10    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:62(_stringify)
-      243    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
-      113    0.000    0.000    0.000    0.000 {built-in method builtins.id}
-        2    0.000    0.000    0.083    0.041 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\menu.py:74(__init__)
-        2    0.000    0.000    0.089    0.045 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\menu.py:9(centre)
-        2    0.000    0.000    2.497    1.249 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\menu.py:124(menu)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\chess_engine.py:662(<listcomp>)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\chess_engine.py:657(init_board)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2338(_loadtk)
-       18    0.000    0.000    0.001    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:679(destroy)
-       16    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2482(place_configure)
+        4    0.000    0.000    0.087    0.022 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:490(render_widget_func)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\user_interface\menu.py:66(action_function)
+        4    0.000    0.000    0.001    0.000 {built-in method builtins.next}
+       44    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:2387(_is_egg_path)
+       16    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:494(__init__)
+      292    0.000    0.000    0.000    0.000 {built-in method __new__ of type object at 0x00007FF9321C3920}
+        3    0.000    0.000    0.020    0.007 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1916(__call__)
+      334    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+       48    0.000    0.000    0.001    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:1588(_parents)
+      292    0.000    0.000    0.000    0.000 {built-in method builtins.issubclass}
+        1    0.000    0.000    0.020    0.020 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:180(can_move)
+        1    0.000    0.000    0.021    0.021 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:339(move)
+        9    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:61(_stringify)
+      258    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:146(<lambda>)
+        1    0.000    0.000    0.027    0.027 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\user_interface\menu.py:30(try_destroy)
+      129    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:458(same_color)
         1    0.000    0.000    0.000    0.000 {built-in method _thread.start_new_thread}
-       18    0.000    0.000    0.000    0.000 <frozen ntpath>:154(splitdrive)
-        1    0.000    0.000    0.031    0.031 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\menu.py:97(__init__)
-        2    0.000    0.000    0.001    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2374(readprofile)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1351(winfo_width)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:938(start)
-        2    0.000    0.000    0.306    0.153 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\menu.py:22(create_root)
-        8    0.000    0.000    0.000    0.000 <frozen ntpath>:107(join)
-        4    0.000    0.000    0.001    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:4080(__del__)
-      136    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\loading_screen_wheel.py:14(is_even)
-        4    0.000    0.000    0.078    0.019 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:4125(__init__)
-        1    0.000    0.000    0.026    0.026 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\menu.py:89(__init__)
-       16    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2625(<listcomp>)
-       64    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\chess_engine.py:114(__init__)
-       16    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\chess_engine.py:400(__init__)
-        2    0.000    0.000    0.000    0.000 <frozen ntpath>:208(split)
-        2    0.000    0.000    0.031    0.015 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1372(update_idletasks)
-        5    0.000    0.000    0.051    0.010 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:3196(__init__)
-        8    0.000    0.000    0.000    0.000 <frozen genericpath>:27(isfile)
-       10    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1550(nametowidget)
-       32    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\chess_engine.py:187(coords)
-        4    0.000    0.000    0.000    0.000 {method 'getvar' of '_tkinter.tkapp' objects}
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:849(__init__)
+        4    0.000    0.000    0.006    0.001 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:163(king_in_check)
+        1    0.000    0.000    0.116    0.116 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:542(__init__)
+        3    0.000    0.000    0.071    0.024 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:4098(__init__)
+        4    0.000    0.000    0.001    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:351(get_provider)
+        3    0.000    0.000    0.028    0.009 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:3169(__init__)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\move_sources.py:16(__init__)
+        1    0.000    0.000    0.002    0.002 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:589(wait)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2311(_loadtk)
+        2    0.000    0.000    0.001    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2347(readprofile)
+       40    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:194(update_piece)
+       12    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2455(place_configure)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:350(play_sound_effect)
+        3    0.000    0.000    1.992    0.664 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\user_interface\menu.py:61(run)
+       14    0.000    0.000    0.002    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:566(get_possible_attack_moves)
+       14    0.000    0.000    0.001    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:592(get_possible_attack_moves)
+       14    0.000    0.000    0.001    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:616(get_possible_attack_moves)
+      186    0.000    0.000    0.000    0.000 {built-in method nt.fspath}
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:125(handle_click)
+       44    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:2394(_is_zip_egg)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:3161(_find_adapter)
+        9    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\copyreg.py:109(_slotnames)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:479(valid_take)
+       15    0.000    0.000    0.000    0.000 {method 'createcommand' of '_tkinter.tkapp' objects}
+        9    0.000    0.000    0.003    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2660(__init__)
+        4    0.000    0.000    0.001    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:1602(__init__)
+        7    0.000    0.000    0.001    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:749(get_possible_attack_moves)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:1496(_fn)
+       54    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\ntpath.py:35(_get_bothseps)
+       44    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:2402(_is_unpacked_egg)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:1502(_validate_resource_path)
+        7    0.000    0.000    0.001    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:639(get_possible_attack_moves)
+       98    0.000    0.000    0.000    0.000 {method 'replace' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:545(__init__)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\random.py:292(randrange)
+        2    0.000    0.000    0.002    0.001 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pygame\pkgdata.py:45(getResource)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\random.py:366(randint)
+        1    0.000    0.000    0.038    0.038 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\user_interface\menu.py:81(__init__)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:1401(__init__)
+       66    0.000    0.000    0.000    0.000 {method 'upper' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2218(wm_protocol)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:501(check_for_en_passant)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:32(__init__)
+      100    0.000    0.000    0.000    0.000 {method 'lower' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:1414(has_resource)
+       18    0.000    0.000    0.000    0.000 {method 'search' of 're.Pattern' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method pygame.mixer.init}
+        3    0.000    0.000    0.001    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:4053(__del__)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\ntpath.py:87(isabs)
+       88    0.000    0.000    0.000    0.000 {method 'endswith' of 'str' objects}
+       12    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2598(<listcomp>)
+        1    0.000    0.000    0.000    0.000 {method 'play' of 'pygame.mixer.Sound' objects}
+        4    0.000    0.000    0.001    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:1606(_setup_prefix)
         1    0.000    0.000    0.000    0.000 <string>:1(<module>)
-       10    0.000    0.000    0.004    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2687(__init__)
-       32    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\chess_engine.py:178(translate_position)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1102(winfo_children)
-       20    0.000    0.000    0.000    0.000 {method 'search' of 're.Pattern' objects}
-        1    0.000    0.000    0.001    0.001 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\loading_screen_wheel.py:56(<listcomp>)
-        4    0.000    0.000   12.275    3.069 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\menu.py:61(run)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:604(wait)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:1080(join)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:288(wait)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2245(wm_protocol)
-       16    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
-       68    0.000    0.000    0.000    0.000 {method 'upper' of 'str' objects}
-        1    0.000    0.000    0.001    0.001 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\loading_screen_wheel.py:52(__init__)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\_weakrefset.py:39(_remove)
-        8    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\loading_screen_wheel.py:33(sin)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1487(quit)
-       52    0.000    0.000    0.000    0.000 {built-in method builtins.len}
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:1044(_stop)
-       32    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\chess_engine.py:120(update_piece)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:236(__init__)
-        4    0.000    0.000   12.275    3.069 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1483(mainloop)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\menu.py:66(action_function)
-        4    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\chess_engine.py:502(__init__)
-       16    0.000    0.000    0.000    0.000 {method 'lower' of 'str' objects}
-        4    0.000    0.000    0.000    0.000 <frozen os>:674(__getitem__)
-       10    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\menu.py:65(return_and_stop)
-        2    0.000    0.000    0.000    0.000 <frozen genericpath>:121(_splitext)
+       11    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1910(__init__)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:236(__init__)
+        2    0.000    0.000    0.001    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:1158(resource_stream)
+        2    0.000    0.000    0.000    0.000 {built-in method pygame.draw.circle}
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:1631(get_resource_stream)
+        4    0.000    0.000    0.000    0.000 {method 'getvar' of '_tkinter.tkapp' objects}
+        2    0.000    0.000    0.000    0.000 {built-in method pygame.mouse.get_pos}
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\posixpath.py:60(isabs)
+       50    0.000    0.000    0.000    0.000 {method 'rstrip' of 'str' objects}
+        2    0.000    0.000    0.001    0.001 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:1142(resource_exists)
+        1    0.000    0.000    0.000    0.000 c:\Users\laneh\.vscode\extensions\ms-python.python-2023.20.0\pythonFiles\lib\python\debugpy\_vendored\pydevd\_pydev_bundle\pydev_monkey.py:1174(pydev_start_new_thread)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\genericpath.py:121(_splitext)
+        8    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\genericpath.py:27(isfile)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1460(quit)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1324(winfo_width)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\cProfile.py:117(__exit__)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:570(__init__)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:550(__init__)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:596(__init__)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\ntpath.py:247(dirname)
+       24    0.000    0.000    0.000    0.000 {built-in method _tkinter._flatten}
+        9    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\user_interface\menu.py:65(return_and_stop)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\ntpath.py:229(splitext)
+       68    0.000    0.000    0.000    0.000 {built-in method builtins.callable}
+        2    0.000    0.000    0.033    0.017 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1345(update_idletasks)
+        3    0.000    0.000    1.992    0.664 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1456(mainloop)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\os.py:675(__getitem__)
+       14    0.000    0.000    0.000    0.000 {method 'values' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\_weakrefset.py:86(add)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\random.py:239(_randbelow_with_getrandbits)
+        2    0.000    0.000    0.016    0.008 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2039(wm_deiconify)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\user_interface\menu.py:38(__init__)
+       11    0.000    0.000    0.000    0.000 {built-in method builtins.repr}
+        1    0.000    0.000    0.001    0.001 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pygame\sysfont.py:392(SysFont)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:268(pos_contains_piece)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\genericpath.py:16(exists)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:643(__init__)
         2    0.000    0.000    0.000    0.000 {built-in method _thread.allocate_lock}
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:1446(current_thread)
-        4    0.000    0.000    0.000    0.000 <frozen os>:748(encodekey)
-        2    0.000    0.000    0.058    0.029 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2066(wm_deiconify)
-        2    0.000    0.000    0.000    0.000 <frozen ntpath>:231(splitext)
-       30    0.000    0.000    0.000    0.000 {built-in method nt.fspath}
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:555(__init__)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:822(_maintain_shutdown_locks)
-        8    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\loading_screen_wheel.py:36(cos)
-        4    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2097(wm_geometry)
-       18    0.000    0.000    0.000    0.000 {method 'values' of 'dict' objects}
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:1118(_wait_for_tstate_lock)
         2    0.000    0.000    0.000    0.000 {method 'format' of 'str' objects}
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\_weakrefset.py:85(add)
-        2    0.000    0.000    0.000    0.000 <frozen ntpath>:242(basename)
-       18    0.000    0.000    0.000    0.000 {method 'replace' of 'str' objects}
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\user_interface\menu.py:38(__init__)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2280(wm_title)
-        4    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\chess_engine.py:476(__init__)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1223(winfo_rootx)
-        2    0.000    0.000    0.000    0.000 <frozen ntpath>:35(_get_bothseps)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\cProfile.py:117(__exit__)
-        4    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
-        2    0.000    0.000    0.000    0.000 <frozen _collections_abc>:778(__contains__)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1356(winfo_x)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:804(_newname)
-       10    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:267(__exit__)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1362(winfo_y)
-        4    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\chess_engine.py:456(__init__)
-       10    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1593(_root)
-        4    0.000    0.000    0.000    0.000 <frozen os>:742(check_str)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\ntpath.py:240(basename)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:1622(_has)
+        9    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:87(<listcomp>)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:1430(current_thread)
+        7    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:156(other_team)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\_collections_abc.py:828(__contains__)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:620(__init__)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:267(__exit__)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pkg_resources\__init__.py:3151(_always_object)
+       16    0.000    0.000    0.000    0.000 {method 'getint' of '_tkinter.tkapp' objects}
+        9    0.000    0.000    0.000    0.000 {method 'get' of 'mappingproxy' objects}
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:1301(_make_invoke_excepthook)
+        8    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\game.py:234(render_taken_piece_log)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:247(change_current_turn)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2070(wm_geometry)
+        8    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\os.py:747(encodekey)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:264(__enter__)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:782(_newname)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1335(winfo_y)
+        3    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:218(back_to_default_color)
         6    0.000    0.000    0.000    0.000 {method 'rfind' of 'str' objects}
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1151(winfo_height)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\chess_engine.py:549(__init__)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:1317(_make_invoke_excepthook)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1275(winfo_screenwidth)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:832(<listcomp>)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1251(winfo_screenheight)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\Documents\python\chess nea\Chess-NEA\chess_engine.py:526(__init__)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:264(__enter__)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:1229(winfo_rooty)
-        4    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:4078(__str__)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\posixpath.py:41(_get_sep)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:279(_is_owned)
+        4    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\inspect.py:606(getmro)
+        1    0.000    0.000    0.000    0.000 c:\Users\laneh\.vscode\extensions\ms-python.python-2023.20.0\pythonFiles\lib\python\debugpy\_vendored\pydevd\_pydev_bundle\pydev_monkey.py:1084(__init__)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1196(winfo_rootx)
+        1    0.000    0.000    0.000    0.000 {method 'getrandbits' of '_random.Random' objects}
+        8    0.000    0.000    0.000    0.000 {method 'startswith' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:276(_acquire_restore)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\move_sources.py:7(__init__)
         2    0.000    0.000    0.000    0.000 {built-in method builtins.max}
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:276(_acquire_restore)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:1199(daemon)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:279(_is_owned)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2734(__init__)
-        1    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:273(_release_save)
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py:2258(wm_resizable)
-        2    0.000    0.000    0.000    0.000 {method 'rstrip' of 'str' objects}
-        2    0.000    0.000    0.000    0.000 {built-in method _thread.get_ident}
-        1    0.000    0.000    0.000    0.000 {method 'difference_update' of 'set' objects}
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1124(winfo_height)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1248(winfo_screenwidth)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:273(_release_save)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1202(winfo_rooty)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1329(winfo_x)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:1224(winfo_screenheight)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:207(clicked)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:1183(daemon)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\os.py:741(check_str)
         2    0.000    0.000    0.000    0.000 {method 'quit' of '_tkinter.tkapp' objects}
-        1    0.000    0.000    0.000    0.000 {method 'add' of 'set' objects}
-        1    0.000    0.000    0.000    0.000 {method 'discard' of 'set' objects}
-        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
-        2    0.000    0.000    0.000    0.000 C:\Users\Harry\AppData\Local\Programs\Python\Python311\Lib\threading.py:568(is_set)
-        2    0.000    0.000    0.000    0.000 {method 'release' of '_thread.lock' objects}
-        2    0.000    0.000    0.000    0.000 {method '__exit__' of '_thread.lock' objects}
-        3    0.000    0.000    0.000    0.000 {method 'locked' of '_thread.lock' objects}
-        1    0.000    0.000    0.000    0.000 {method '__exit__' of '_thread.RLock' objects}
-        1    0.000    0.000    0.000    0.000 {method 'append' of 'collections.deque' objects}
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2231(wm_resizable)
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:2253(wm_title)
+        3    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\tkinter\__init__.py:4051(__str__)
         1    0.000    0.000    0.000    0.000 {method '__enter__' of '_thread.lock' objects}
-        1    0.000    0.000    0.000    0.000 {method 'splitlist' of '_tkinter.tkapp' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        2    0.000    0.000    0.000    0.000 C:\Users\laneh\Documents\chess-nea-4\Chess-NEA\chess_engine.py:214(is_possible_move)
+        1    0.000    0.000    0.000    0.000 {built-in method pygame.font.init}
+        3    0.000    0.000    0.000    0.000 {built-in method _operator.index}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.abs}
+        1    0.000    0.000    0.000    0.000 {method '__exit__' of '_thread.RLock' objects}
+        1    0.000    0.000    0.000    0.000 {method 'bit_length' of 'int' objects}
+        1    0.000    0.000    0.000    0.000 {method 'add' of 'set' objects}
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\threading.py:553(is_set)
+        1    0.000    0.000    0.000    0.000 C:\Users\laneh\AppData\Local\Programs\Python\Python310\lib\site-packages\pygame\sysfont.py:344(initsysfonts)
+        1    0.000    0.000    0.000    0.000 {method '__exit__' of '_thread.lock' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method _thread.get_ident}
+        1    0.000    0.000    0.000    0.000 {method 'release' of '_thread.lock' objects}
+        1    0.000    0.000    0.000    0.000 {method 'append' of 'collections.deque' objects}
 
 
