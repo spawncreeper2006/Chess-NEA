@@ -1,6 +1,7 @@
 
-from copy import deepcopy
-from stack import stack, NP_Stack
+#from copy import deepcopy
+from stack import stack, Stack, NP_Stack
+from move import Move
 
 
 KNIGHT_VECTORS = [(2, 1), (2, -1), (1, -2), (-1, -2), (-2, 1), (-2, -1), (1, 2), (-1, 2)]
@@ -27,91 +28,6 @@ def in_board(pos: tuple) -> bool:
 
 
 
-class Move:
-
-    def __init__(self, start: tuple[int, int], dest: tuple[int, int], flags: tuple = (), board = None):
-        self.start = start
-        self.dest = dest
-        self.flags = flags
-        self.piece = ''
-        if board != None:
-            self.piece = board.coords(start).piece.piece_identifier
-
-
-    def from_int(move_num: int):
-        flag_dict = {0: (),
-            1: ('WIN'),
-            2: ('DRAW'),
-            3: ('TIMEOUT'),
-            4: ('TAKE'),
-            5: ('QS_CASTLE'),
-            6: ('KS_CASTLE'),
-            7: ('KNIGHT'),
-            8: ('BISHOP'),
-            9: ('ROOK'),
-            10: ('QUEEN'),
-            11: ('TAKE', 'KNIGHT'),
-            12: ('TAKE', 'BISHOP'),
-            13: ('TAKE', 'ROOK'),
-            14: ('TAKE', 'QUEEN')}
-        
-        
-        move = [[0, 0], [0, 0]]
-
-        move_num, move[0][0] = divmod(move_num, 8)
-        move_num, move[0][1] = divmod(move_num, 8)
-        move_num, move[1][0] = divmod(move_num, 8)
-        move_num, move[1][1] = divmod(move_num, 8)
-        flags = flag_dict[move_num]
-
-        move[0][0] += 1
-        move[0][1] += 1
-        move[1][0] += 1
-        move[1][1] += 1
-
-        return Move(tuple(move[0]), tuple(move[1]), flags)
-
-    def from_bytes(_bytes: bytes):
-        
-        return Move.from_int(int.from_bytes(_bytes, 'little'))
-
-    
-    def to_int(self) -> int:
-        flag_dict = {(): 0,
-            ('WIN'): 1,
-            ('DRAW'): 2,
-            ('TIMEOUT'): 3,
-            ('TAKE'): 4,
-            ('QS_CASTLE'): 5,
-            ('KS_CASTLE'): 6,
-            ('KNIGHT'): 7,
-            ('BISHOP'): 8,
-            ('ROOK'): 9,
-            ('QUEEN'): 10,
-            ('TAKE', 'KNIGHT'): 11,
-            ('TAKE', 'BISHOP'): 12,
-            ('TAKE', 'ROOK'): 13,
-            ('TAKE', 'QUEEN'): 14}
-        
-        #move has two tuples with x and y from 1 to 8
-        move_num = (self.start[0] - 1)
-        move_num += (self.start[1] - 1) * (2 ** 3)
-        move_num += (self.dest[0] - 1) * (2 ** 6)
-        move_num += (self.dest[1] - 1) * (2 ** 9)
-        move_num += flag_dict[self.flags] * (2 ** 12)
-
-        return move_num
-    
-    def to_bytes(self) -> bytes:
-        
-        return self.to_int().to_bytes(2, 'little')
-    
-    def __str__(self):
-        if self.piece:
-            return f'{self.piece} @ {self.start} -> {self.dest}'
-        else:
-            return f'{self.start} -> {self.dest}'
-
     
 
 
@@ -129,7 +45,7 @@ def get_team_moves(team: str, this_board):
         for move in moves:
             yield (piece, move)
 
-def get_team_attack_moves(team:str, this_board) -> set:
+def get_team_attack_moves(team: str, this_board) -> set:
     
     moves = []
     team_pieces = []
@@ -138,27 +54,26 @@ def get_team_attack_moves(team:str, this_board) -> set:
             team_pieces = this_board.white_pieces
         case 'b':
             team_pieces = this_board.black_pieces
-
-    
-
     for piece in team_pieces:
-
-
         moves += piece.get_possible_attack_moves(this_board)
-
 
     return set(moves)
 
 def does_not_endanger_king(piece, board, pos) -> bool:
-    possible_board = deepcopy(board)
+    #possible_board = deepcopy(board)
     
     piece_position = piece.pos
-    piece = possible_board.coords(piece_position).piece
-    possible_board = piece.move(possible_board, pos, is_simulated=True)
+    piece = board.coords(piece_position).piece
+
+    piece.move(board, pos)
+    enemy_attack_moves = get_team_attack_moves(board.current_turn, board)
+    king_pos = board.king_pos[other_team(board.current_turn)]
+    return_val = not king_pos in enemy_attack_moves
+    board.undo()
+    return return_val
     
-    enemy_attack_moves = get_team_attack_moves(possible_board.current_turn, possible_board)
     
-    return not possible_board.king_pos[other_team(possible_board.current_turn)] in enemy_attack_moves
+    # return not possible_board.king_pos[other_team(possible_board.current_turn)] in enemy_attack_moves
         
 
 
@@ -254,12 +169,45 @@ class Board:
         self.taken_white_pieces = []
         self.taken_black_pieces = []
         self.king_pos = {}
-        #self.previous_piece_to_move = None
-        #self.previous_move = ()
-        #self.previous_move = None
-        self.stack = NP_Stack(500)
+        self.previous_piece_to_move = None
+        self.stack = NP_Stack(512)
+        self.taken_piece_stack = Stack(32)
         
+    def undo(self, flip_board: bool = True) -> bool:
+        if self.stack.is_empty():
+            return False
+        
+        #update piece
+        move = Move.from_int(self.stack.pop())
+        target = self.coords(move.dest).piece
+        target.update_pos(self, move.start)
+        target.pos = move.start
 
+        if 'TAKE' in move.flags:
+            piece_team = other_team(self.current_turn)
+            match piece_team:
+                case 'w':
+                    taken_pieces = board.taken_white_pieces
+
+                case 'b':
+                    taken_pieces = board.taken_black_pieces
+
+
+            piece = self.taken_piece_stack.pop()
+            print (piece, taken_pieces, piece_team)
+            taken_pieces.remove(piece)
+            self.coords(move.dest).update_piece(piece)
+        
+        if target.piece_identifier[1:] == 'P':
+            if abs(move.start[1] - move.dest[1]) == 2:
+                target.has_moved = False
+
+        if flip_board:
+            self.change_current_turn()
+
+
+
+        return True
 
     def change_current_turn(self):
         match self.current_turn:
@@ -269,8 +217,8 @@ class Board:
                 self.current_turn = 'w'
 
     def translate_position(self, pos: tuple) -> tuple:
-        pos = (pos[0]-1, pos[1]-1)
-        return pos[0]+pos[1]*8
+        pos = (pos[0] - 1, pos[1] - 1)
+        return pos[0] + pos[1] * 8
 
     def in_board(self,
                 pos:tuple) -> bool:
@@ -330,11 +278,18 @@ class Piece:
                 self.pieces = this_board.black_pieces
 
 
+    def update_pos(self, new_board: Board, new_pos: tuple[int, int]):
+        # new_board.coords()
+        new_board.coords(self.pos).update_piece(None)
+        new_board.coords(new_pos).update_piece(self)
+        # target_square = new_board.coords(new_pos)
+
         
 
 
 
     def die(self, new_board:Board):
+        new_board.taken_piece_stack.push(self)
         self.pieces.remove(self)
         pieces = []
         team = ''
@@ -363,14 +318,13 @@ class Piece:
     def move(self,
              new_board: Board,
              new_pos: tuple,
-             is_simulated=False,
              flip_board=True,
              is_computer=False):
         
 
 
         # new_board.previous_move = (self.pos, new_pos)
-        # new_board.previous_piece_to_move = self
+        new_board.previous_piece_to_move = self
         previous_move = Move(self.pos, new_pos, board=new_board)
 
         new_board.coords(self.pos).update_piece(None)
@@ -378,8 +332,8 @@ class Piece:
         target_square = new_board.coords(new_pos)
 
         if target_square.contains_piece: #killing a piece
-
             
+            previous_move.flags += ('TAKE',)
             target_square.piece.die(new_board)
             target_square.update_piece(self)
         else:
@@ -402,7 +356,7 @@ class Piece:
         
 
         
-        if self.piece_identifier[1] == 'P' and (not is_simulated) or is_computer: #it is a pawn
+        if self.piece_identifier[1] == 'P': #it is a pawn
 
             if abs(old_pos[1] - new_pos[1]) == 2:
 
@@ -414,25 +368,28 @@ class Piece:
 
             to_promote = False
             
-            match self.color:
-                case 'w':
-                     if self.pos[1] == 8:
-                         to_promote = True
-                         
-                         new_board.white_pieces.remove(self)
-                         team = 'w'
-                case 'b':
-                    if self.pos[1] == 1:
-                        to_promote = True
-                        
-                        new_board.black_pieces.remove(self)
-                        team = 'b'
+            if self.pos[1] in (1, 8) and self.piece_identifier[1:] == 'P':
+            
+                match self.color:
+                    case 'w':
+                        if self.pos[1] == 8:
+                            to_promote = True
+                            
+                            new_board.white_pieces.remove(self)
+                            team = 'w'
+                    case 'b':
+                        if self.pos[1] == 1:
+                            to_promote = True
+                            
+                            new_board.black_pieces.remove(self)
+                            team = 'b'
 
 
             if to_promote:
                 if is_computer:
                     new_piece = Queen
                 else:
+                    print ('this is called for some reason')
                     new_piece = new_board.ask_for_promotion()
 
                 
@@ -450,18 +407,18 @@ class Piece:
 
         in_check = king_in_check(new_board)
 
-        if not is_simulated:
+        #if not is_simulated:
 
-            cm = can_move(new_board)
+        cm = can_move(new_board)
 
 
-            if not cm:
+        if not cm:
 
-                if in_check:
-                    new_board.win_state = other_team(new_board.current_turn)
+            if in_check:
+                new_board.win_state = other_team(new_board.current_turn)
 
-                else:
-                    new_board.win_state = 'd'
+            else:
+                new_board.win_state = 'd'
 
         if new_board.win_state != '':
             if new_board.win_state == 'd':
@@ -665,11 +622,10 @@ class King(Piece):
     def move(self,
              new_board: Board,
              new_pos: tuple,
-             is_simulated=False,
              is_computer=False):
 
         # new_board.previous_move = (self.pos, new_pos)
-        # new_board.previous_piece_to_move = self
+        new_board.previous_piece_to_move = self
 
         previous_move = Move(self.pos, new_pos, board=new_board)
 
@@ -711,19 +667,19 @@ class King(Piece):
         new_board.king_pos[self.color] = new_pos
 
         in_check = king_in_check(new_board)
-        if not is_simulated:
-            cm = can_move(new_board)
+        # if not is_simulated:
+        cm = can_move(new_board)
 
 
-            if not cm:
+        if not cm:
 
-                if in_check:
-                    board.win_state = other_team(new_board.current_turn)
-                    previous_move.flag = 'WIN'
+            if in_check:
+                board.win_state = other_team(new_board.current_turn)
+                previous_move.flag = 'WIN'
 
-                else:
-                    board.win_state = 'd'
-                    previous_move.flag = 'DRAW'
+            else:
+                board.win_state = 'd'
+                previous_move.flag = 'DRAW'
 
         new_board.stack.push(previous_move.to_int())
         return new_board
@@ -818,8 +774,3 @@ board = Board()
 init_board(board)
 
 
-if __name__ == '__main__':
-    x = Move((8, 9), (2, 2))
-    num = x.to_int()
-    print (Move.from_int(num))
-    

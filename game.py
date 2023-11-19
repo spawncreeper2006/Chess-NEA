@@ -3,7 +3,7 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
 
 import pygame
-from chess_engine import *
+from chess_engine_2 import *
 import random
 
 import tkinter as tk
@@ -48,7 +48,7 @@ def promote_pawn_UI() -> Piece:
 
     return pieces[var.get()]
 
-board.ask_for_promotion = promote_pawn_UI
+#board.ask_for_promotion = promote_pawn_UI
 
 
 
@@ -100,40 +100,87 @@ def display_draw(screen:pygame.surface.Surface, color=RED):
 
 
 
-current_possible_move_coords = []
+# current_possible_move_coords = []
 
 
 class Pygame_Chess_Board:
-    def __init__(self, pos: tuple, size: float):
+    def __init__(self, board: Board, pos: tuple, size: float):
+        self.board = board
         self.pos = pos
         self.size = size
         self.square_size = size // 8
-        self.chess_coords_transform = lambda t: t
-        
+        # self.chess_coords_transform = lambda t: t
+        self.square_colors = [WHITE_WOOD if (n % 8 + n // 8) % 2 == 1 else BLACK_WOOD for n in range(64)]
+        self.default_sqaure_colors = self.square_colors.copy()
+        self.transform = None
 
-    def screen_to_chess_coords(self, coords: tuple) -> tuple[int, int]:
+    def transform_coords(self, coord: tuple[int, int]) -> int:
+        coord = (coord[0] - 1, coord[1] - 1)
+        _val = (coord[0] + coord[1] * 8)
+        return _val
 
-        coords = coords[0] - self.pos[0], coords[1] - self.pos[1]
-        coords = coords[0] // self.square_size, coords[1] // self.square_size
-        coords = coords[0] + 1, 7 - coords[1] + 1
-        coords = int(coords[0]), int(coords[1])
-        coords = self.chess_coords_transform(coords)
-        return coords
-
+    def set_color(self, coord: tuple[int, int], color: tuple[int, int, int]):
+        self.square_colors[self.transform_coords(coord)] = color
     
+    def set_colors(self, coords: tuple[tuple[int, int]], color: tuple[int, int, int]):
+        for coord in coords:
+            self.set_color(coord, color)
 
-    def handle_click(self, click_pos: tuple):
+    def default_color(self, coord: tuple[int, int]):
+        index = self.transform_coords(coord)
+        self.square_colors[index] = self.default_sqaure_colors[index]
+
+    def default_colors(self, coords: tuple[tuple[int, int]]):
+        for coord in coords:
+            self.default_color(coord)
+
+    def screen_to_chess_coords(self, coords: tuple[int, int]) -> tuple[int, int]:
+
+        
+        coords = coords[0] - self.pos[0], coords[1] - self.pos[1]
+        coords = coords[0] // self.square_size + 1, coords[1] // self.square_size + 1
+        return self.transform(coords)
+        # return coords
+    
+    def handle_click(self, click_pos: tuple[int, int]):
         
         coords = self.screen_to_chess_coords(click_pos)
 
-        if in_board(coords):
+        if Board.contains(coords):
             return coords
         else:
             return None
         
-    def render_board(self, screen: pygame.surface.Surface, view_direction: str):
+    
 
-        global current_possible_move_coords
+
+
+        
+
+    # def screen_to_chess_coords(self, coords: tuple) -> tuple[int, int]:
+
+    #     coords = coords[0] - self.pos[0], coords[1] - self.pos[1]
+    #     coords = coords[0] // self.square_size, coords[1] // self.square_size
+    #     coords = coords[0] + 1, 7 - coords[1] + 1
+    #     coords = int(coords[0]), int(coords[1])
+    #     coords = self.coords_transform(coords)
+    #     print (coords)
+    #     return coords
+
+    
+
+    # def handle_click(self, click_pos: tuple):
+        
+    #     coords = self.screen_to_chess_coords(click_pos)
+
+    #     if Board.contains(coords):
+    #         return coords
+    #     else:
+    #         return None
+        
+    def render_board(self, screen: pygame.surface.Surface, view_direction: str, possible_moves: list[tuple]):
+
+        #global current_possible_move_coords
         
 
         pygame.draw.rect(screen, BOARD_OUTLINE_COLOR, [self.pos[0] - BOARD_OUTLINE, self.pos[1] - BOARD_OUTLINE, 2 * BOARD_OUTLINE + self.size, BOARD_OUTLINE])
@@ -143,35 +190,60 @@ class Pygame_Chess_Board:
 
         match view_direction:
             case "w":
-                self.chess_coords_transform = lambda t:t
-            case "b":
-                self.chess_coords_transform = lambda t: (t[0], 9-t[1])
-        
-        for n in range(64):
-            y = (n // 8)
-            x = n % 8
-
-            coords = self.pos[0] + x * self.square_size, self.pos[1] + y * self.square_size
-
-            chess_coords = self.screen_to_chess_coords(coords)
-
-
-            square = board.coords(chess_coords)
+                self.transform = lambda t: (t[0], 9 - t[1])
+                # self.transform = lambda t: t
+            case 'b':
+                self.transform = lambda t: (9 - t[0], t[1])
             
-            pygame.draw.rect(screen, square.color, [coords[0], coords[1], self.square_size, self.square_size],0)
+        
+        # for n in range(64):
+        #     y = (n // 8)
+        #     x = n % 8
+
+        #     coords = (x, y)
+
+        #     x, y = self.transform((x + 1, y + 1))
+        #     coords = self.pos[0] + x * self.square_size, self.pos[1] + y * self.square_size
+
+            
+        #     chess_coords = coords[0] - self.pos[0], coords[1] - self.pos[1]
+        #     chess_coords = chess_coords[0] // self.square_size + 1, chess_coords[1] // self.square_size + 1
+        #     chess_coords = self.transform(chess_coords)
+        #     # x, y = self.chess_coords_transform(chess_coords)
+        #     square = self.board[self.transform((chess_coords[0], chess_coords[1]))]
+        #     pygame.draw.rect(screen, self.square_colors[n], [coords[0], coords[1], self.square_size, self.square_size],0)
 
 
-            if square.contains_piece:
+        #     if square.piece != None:
 
-                screen.blit(MAIN_PIECE_IMAGE_DICT[square.piece.piece_identifier], coords)
+        #         screen.blit(MAIN_PIECE_IMAGE_DICT[square.piece.piece_identifier], coords)
+
+        #     if chess_coords in possible_moves:
+        #         pygame.draw.circle(screen, BLUE, (coords[0] + BLUE_DOT_OFFSET, coords[1] + BLUE_DOT_OFFSET), 10, 10)
 
 
-            if chess_coords in current_possible_move_coords:
-                pygame.draw.circle(screen, BLUE, (coords[0] + BLUE_DOT_OFFSET, coords[1] + BLUE_DOT_OFFSET), 10, 10)
+        for n in range(2 ** 6):
+            y, x = divmod(n, 8)
+            chess_coords = self.transform((x + 1, y + 1))
+            
+            index = self.transform_coords(chess_coords)
+            rect = [x * self.square_size + self.pos[1], y * self.square_size + self.pos[1], self.square_size, self.square_size]
+            pygame.draw.rect(screen, self.square_colors[index], rect)
 
+            square = self.board[chess_coords]
 
-pygame_chess_board = Pygame_Chess_Board((100, 100), 400)
+            if square.piece != None:
+                screen.blit(MAIN_PIECE_IMAGE_DICT[square.piece.piece_identifier], rect)
 
+            if chess_coords in possible_moves:
+                pygame.draw.circle(screen, BLUE, (rect[0] + BLUE_DOT_OFFSET, rect[1] + BLUE_DOT_OFFSET), 10, 10)
+        
+        
+        # x = pygame.surface.Surface((500, 500))
+        # x.set_alpha(150)
+        # # x.fill((255, 255, 255))
+        # pygame.draw.polygon(x.convert_alpha(), (0, 0, 0), ((0, 100), (0, 200), (200, 200), (200, 300), (300, 150), (200, 0), (200, 100)))
+        # screen.blit(x, (0, 0))
 
 
 
@@ -233,10 +305,12 @@ if has_audio:
 
 def render_taken_piece_log(screen: pygame.surface.Surface, piece_list: list, starting_coords: tuple):
 
-    coords = starting_coords
-    for piece in piece_list:
-        screen.blit(ICON_PIECE_IMAGE_DICT[piece], coords)
-        coords = add_coords(coords, (ICON_SPACING, 0))
+    # coords = starting_coords
+    # for piece in piece_list:
+    #     screen.blit(ICON_PIECE_IMAGE_DICT[piece], coords)
+    #     coords = add_coords(coords, (ICON_SPACING, 0))
+
+    pass
 
 
 
@@ -245,27 +319,40 @@ def render_taken_piece_log(screen: pygame.surface.Surface, piece_list: list, sta
 class Window:
 
     def undo(self):
-        global board
-        try:
-            board = stack.pop()
-        except:
-            return
-        pieces = board.white_pieces if board.current_turn == 'w' else board.black_pieces
-        for piece in pieces:
-            board.coords(piece.pos).back_to_default_color()
+        if self.board.can_undo():
+            self.board.undo()
+
+        # global board
+
+        # board.undo()
+        # pieces = board.white_pieces if board.current_turn == 'w' else board.black_pieces
+        # for piece in pieces:
+        #     board.coords(piece.pos).back_to_default_color()
+        
+        # self.board.undo()
+
             
 
     def __init__(self, size: tuple[int, int], render_function: Callable[[list[pygame.event.Event]], None], undo_enabled=False):
         global CHESS_SOUND_DICT, CHESS_SOUND_DICT_2, BIG_FONT, current_possible_moves, current_possible_move_coords, stack
         
+        self.possible_move_coords = set()
+        
+        self.board = create_board()
+        self.pygame_chess_board = Pygame_Chess_Board(self.board, (100, 100), 400)
+
+
+
 
         self.widgets = []
 
         self.screen = pygame.display.set_mode(size)
+
         self.undo_enabled = undo_enabled
         if undo_enabled:
             self.widgets.append(Button(screen=self.screen, text='Undo', pos=(530, 30), click_action=self.undo, background_color=(230, 230, 230)))
-            stack.clear()
+            
+            # stack.clear()
 
 
         self.thread = None
@@ -281,11 +368,13 @@ class Window:
         self.disabled = False
         self.destroyed = False
 
+        self.selected = None
+        
 
-
-        current_possible_moves = set()
-        current_possible_move_coords = set()
+        # current_possible_moves = set()
+        # current_possible_move_coords = set()
         pygame.font.init()
+
         if has_audio:
                 
             pygame.mixer.init()
@@ -336,14 +425,15 @@ class Window:
         else: #Nothing happened
             return True
         
-    def move(self, piece: Piece, pos: tuple[int, int], is_computer=False):
+    def move(self, start: tuple[int, int], dest: tuple[int, int], is_computer=False):
         
         # piece.move(board, pos, is_computer=is_computer)
-        if self.undo_enabled:
-            stack.push(deepcopy(board))
+        # if self.undo_enabled:
+        #     stack.push(deepcopy(board))
         
-        board.coords(piece.pos).piece.move(board, pos, is_simulated=False, is_computer=is_computer)
-        self.play_sound_effect(piece)
+        #board.coords(piece.pos).piece.move(board, pos, is_simulated=False, is_computer=is_computer)
+        self.board.move(np.array([start, dest]))
+        self.play_sound_effect(self.board[dest].piece)
 
         
 
@@ -364,107 +454,153 @@ class Window:
 
     def handle_click(self) -> bool:
         move_made = False
-        global selected, current_possible_moves, current_possible_move_coords
         pos = pygame.mouse.get_pos()
-        coords = pygame_chess_board.handle_click(pos)
+        coords = self.pygame_chess_board.handle_click(pos)
         if coords != None and not self.disabled:
 
-            this_square = board.coords(coords)
 
-            if this_square.contains_piece and this_square.piece.color == board.current_turn: #SELECTING PIECE
-            
+            square = self.board[coords]
+            if square.piece != None and square.piece.color == self.board.current_turn:
+                if self.selected != None:
+                    self.pygame_chess_board.default_color(self.selected)
 
-                this_square.clicked()
-                
-
-                if selected != None and selected != this_square:
-                    selected.back_to_default_color()
-                    for square in current_possible_moves:
-                        square.back_to_default_color()
-
-                selected = this_square
-                current_possible_moves = []
-                current_possible_move_coords = selected.piece.get_moves(board)
-                to_remove = []
-                for move in current_possible_move_coords:
-                    if not does_not_endanger_king(this_square.piece, board, move):
-                        to_remove.append(move)
-                for item in to_remove:
-                    current_possible_move_coords.remove(item)
-                        
-                
-                for square_coords in current_possible_move_coords:
-                    square = board.coords(square_coords)
-                    square.is_possible_move()
-                    current_possible_moves.append(square)
+                # self.pygame_chess_board.default_colors(self.current_possible_moves)
                     
-            elif this_square in current_possible_moves: #MOVING
+                self.selected = coords
+                self.possible_move_coords = square.piece.get_moves(coords, self.board)
+                self.possible_move_coords = set(list(map(tuple, self.possible_move_coords)))
+
+                self.pygame_chess_board.set_color(np.array(self.selected), SELECTED_COLOR)
+
+                print (self.selected)
+
+            elif coords in self.possible_move_coords:
                 
+                self.move(self.selected, coords)
                 move_made = True
-                piece = selected.piece
-                #self.move(piece, coords, True)
-                self.move(piece, coords, False)
-                # piece.move(board, coords)
-                
-
-                
-                back_to_default(selected, current_possible_moves)
-                selected = None                
-
-                
-                current_possible_moves = []
-                current_possible_move_coords = []
-
-
-
-                
-                
-                
-
-            elif selected != None: #CLICKED AWAY FROM PIECE
-
-                back_to_default(selected, current_possible_moves)
-                selected = None
-                current_possible_moves = set()
-                current_possible_move_coords = []
+                self.pygame_chess_board.default_color(self.selected)
+                self.possible_move_coords = set()
 
         else:
+            self.pygame_chess_board.default_color(self.selected)
+            self.possible_move_coords = set()
+
+
             for widget in self.widgets:
                 if widget.check_click(pos):
+
+                    
+                    
                     break
 
         return move_made
+                    
+
+        
+
+
+
+        # move_made = False
+        # global selected, current_possible_moves, current_possible_move_coords
+        # pos = pygame.mouse.get_pos()
+        # coords = pygame_chess_board.handle_click(pos)
+        # if coords != None and not self.disabled:
+
+            # this_square = board.coords(coords)
+
+            # if this_square.contains_piece and this_square.piece.color == board.current_turn: #SELECTING PIECE
+            
+
+            #     this_square.clicked()
+                
+
+                # if selected != None and selected != this_square:
+                #     selected.back_to_default_color()
+                #     for square in current_possible_moves:
+                #         square.back_to_default_color()
+
+                # selected = this_square
+                # current_possible_moves = []
+                # current_possible_move_coords = selected.piece.get_moves(board)
+                # to_remove = []
+                # for move in current_possible_move_coords:
+                #     if not does_not_endanger_king(this_square.piece, board, move):
+                #         to_remove.append(move)
+                # for item in to_remove:
+                #     current_possible_move_coords.remove(item)
+                        
+                
+                # for square_coords in current_possible_move_coords:
+                #     square = board.coords(square_coords)
+                #     square.is_possible_move()
+                #     current_possible_moves.append(square)
+
+                
+                    
+            # elif this_square in current_possible_moves: #MOVING
+                
+            #     move_made = True
+            #     piece = selected.piece
+            #     #self.move(piece, coords, True)
+            #     self.move(piece, coords, False)
+            #     # piece.move(board, coords)
+                
+
+                
+            #     back_to_default(selected, current_possible_moves)
+            #     selected = None                
+
+                
+            #     current_possible_moves = []
+            #     current_possible_move_coords = []
+
+
+
+                
+                
+                
+
+            # elif selected != None: #CLICKED AWAY FROM PIECE
+
+            #     back_to_default(selected, current_possible_moves)
+            #     selected = None
+            #     current_possible_moves = set()
+            #     current_possible_move_coords = []
+
+        # else:
+
+
+        # return move_made
 
     
     def render_screen(self, *, view_direction: str):
 
 
         self.screen.fill(WHITE)
-        if DEBUG_MODE:
-            for x in range(1, 9):
-                for y in range(1, 9):
-                    board.coords((x, y)).back_to_default_color()
+        # if DEBUG_MODE:
+        #     for x in range(1, 9):
+        #         for y in range(1, 9):
+        #             board.coords((x, y)).back_to_default_color()
                     
-            for move in get_team_attack_moves(other_team(board.current_turn), board):
-                board.coords(move).color = RED
-
-        pygame_chess_board.render_board(self.screen, view_direction)
+        #     for move in get_team_attack_moves(other_team(board.current_turn), board):
+        #         board.coords(move).color = RED
+        self.pygame_chess_board.render_board(self.screen, view_direction, self.possible_move_coords)
         
 
-        match view_direction:
-            case 'w':
-                render_taken_piece_log(self.screen, board.taken_white_pieces, (100, 30))
-                render_taken_piece_log(self.screen, board.taken_black_pieces, (100, HEIGHT - 50))
+        # match view_direction:
+        #     case 'w':
+        #         render_taken_piece_log(self.screen, board.taken_white_pieces, (100, 30))
+        #         render_taken_piece_log(self.screen, board.taken_black_pieces, (100, HEIGHT - 50))
 
-            case 'b':
-                render_taken_piece_log(self.screen, board.taken_black_pieces, (100, 30))
-                render_taken_piece_log(self.screen, board.taken_white_pieces, (100, HEIGHT - 50))
+        #     case 'b':
+        #         render_taken_piece_log(self.screen, board.taken_black_pieces, (100, 30))
+        #         render_taken_piece_log(self.screen, board.taken_white_pieces, (100, HEIGHT - 50))
 
         
 
-        if board.win_state != '':
+        if self.board.win_state != '':
 
-            match board.win_state:
+            match self.board.win_state:
                 case 'w':
                     display_checkmate(self.screen)
                 case 'b':
@@ -474,12 +610,12 @@ class Window:
 
             self.disabled = True
 
-        elif board.white_checked or board.black_checked:
+        elif self.board.checked['w'] or self.board.checked['b']:
             display_check(self.screen)
         
         
 
-        match board.current_turn:
+        match self.board.current_turn:
             case "w":
                 pygame.display.set_caption("Easy Chess: White Turn")
             case "b":
@@ -508,8 +644,6 @@ def wait_for_move(window: Window, func, *args):
         window.finished_thread = True
 
 
-
-
 class Against_Move_Source(Window):
     
 
@@ -529,10 +663,10 @@ class Against_Move_Source(Window):
 
 
 
-        if not self.busy and board.current_turn != self.player_side and board.win_state == '':
+        if not self.busy and self.board.current_turn != self.player_side and self.board.win_state == '':
             self.busy = True
 
-            self.thread = Thread(target = wait_for_move, args=((self, self.move_source.get_move, board)))
+            self.thread = Thread(target = wait_for_move, args=((self, self.move_source.get_move, self.board)))
             self.thread.start()
 
 
@@ -544,8 +678,6 @@ class Against_Move_Source(Window):
         self.move_source = move_source
         super().__init__(size, self.render_function, **kwargs)
 
-
-
 class Same_PC_Multiplayer(Window):
 
     @render_widgets
@@ -556,7 +688,7 @@ class Same_PC_Multiplayer(Window):
                 self.handle_click()
     
 
-        self.render_screen(view_direction=board.current_turn)
+        self.render_screen(view_direction=self.board.current_turn)
 
         pygame.display.flip()
 

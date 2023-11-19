@@ -1,7 +1,7 @@
 from constants import *
 from performance_monitor import log_performance
 from game import Against_Move_Source, Same_PC_Multiplayer, main_game
-from chess_engine import board, init_board
+# from chess_engine import board, init_board
 from chess_client import Connection, establish_quickplay_connection, establish_tournament_connection
 from move_sources import Minimax, Quickplay
 from user_interface.menu import menu, Choice, Quickplay_Menu
@@ -18,7 +18,7 @@ def quickplay_conn(kill: Callable, start_info: dict) -> tuple[Connection, str]:
     start_info['conn'] = conn
     start_info['team'] = team
 
-# def kill_ui_from_thread_func(root: Tk) -> Callable[[], None]:
+# def kill_ui_from_tread_func(root: Tk) -> Callable[[], None]:
 #     def func():
 #         root.quit()
 #         root.update()
@@ -37,7 +37,7 @@ def main():
                     case 'ai':
                         print ('ai')
                     case 'same pc':
-                        print ('this was selected')
+                        # print ('this was selected')
                         main_game(Same_PC_Multiplayer((600, 600), undo_enabled=True))
 
                     case _:
@@ -64,7 +64,7 @@ def main():
                     case _:
                         break
             
-            init_board(board)
+            # init_board(board)
 
 
 if __name__ == '__main__':
