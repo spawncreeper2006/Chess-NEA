@@ -13,59 +13,71 @@ class Move:
             self.flags = flags
         else:
             self.flags = {}
+            self.flags['end'] = False
+            self.flags['end_state'] = ''
+            self.flags['check'] = False
+            self.flags['piece'] = ''
+            self.flags['promotion'] = False
+            self.flags['promotion_piece'] = ''
+            self.flags['castling'] = ''
 
 
     def from_int(move_num: int):
 
-        # flag_num, position_num = move_num & 0xfffffffffffff000, move_num & 0x0000000000000fff
+        print (bin(move_num)[2:].zfill(32))
+
+        # # flag_num, position_num = move_num & 0xfffffffffffff000, move_num & 0x0000000000000fff
         flags = {}
 
-        # flags, time = flags & 0xfff0000000000, flags & 0x000ffffffffff
-        temp = None
-        move_num, temp = divmod(move_num, 2)
-        flags['end'] = bool(temp)
+        # # flags, time = flags & 0xfff0000000000, flags & 0x000ffffffffff
+        # temp = None
 
-        move_num, temp = divmod(move_num, 4)
-        flags['end_state'] = ['', 'w', 'd', 'b'] [temp]
+        # move_num, temp = divmod(move_num, 2) #1 bit
+        # flags['end'] = bool(temp)
 
-        move_num, temp = divmod(move_num, 2)
-        flags['check'] = bool(temp)
+        # move_num, temp = divmod(move_num, 4) #2 bits
+        # flags['end_state'] = ['', 'w', 'd', 'b'] [temp]
 
-        move_num, temp = divmod(move_num, 8)
-        flags['piece'] = Move.pieces[temp]
+        # move_num, temp = divmod(move_num, 2) #1 bit
+        # flags['check'] = bool(temp)
 
-        move_num, temp = divmod(move_num, 2)
-        flags['promotion'] = bool(temp)
+        # move_num, temp = divmod(move_num, 8) #3 bits
+        # flags['piece'] = Move.pieces[temp]
 
-        move_num, temp = divmod(move_num, 8)
-        flags['promotion_piece'] = 
+        # move_num, temp = divmod(move_num, 2) #1 bit
+        # flags['promotion'] = bool(temp)
 
-
-
-
+        # move_num, temp = divmod(move_num, 8) #3 bits
         
+        # flags['promotion_piece'] = Move.pieces[temp]
+
+        # move_num, temp = divmod(move_num, 4) #2 bits
+        # flags['castling'] = ['', 'QS', 'KS']
+
+        # #cum 13 bits / 32. 19 remaining
+        
+        # #7 redundant bits :(
+
+        # #12 bits required for move
+
+        print (move_num, move_num & 0x80000000)
+        flags['end'] = bool(move_num & 0x80000000)
+        flags['end_state'] = ['', 'w', 'd', 'b'] [(move_num & 0x60000000) >> 29]
+        flags['check'] = bool(move_num & 0x10000000)
+        flags['piece'] = Move.pieces[(move_num & 0x0e000000) >> 25]
+        flags['promotion_piece'] = bool(move_num & 0x01000000)
+        flags['castling'] = ['', 'QS', 'KS'] [(move_num & 0x00c00000) >> 22]
+
+        #print (move_num & 0x00000d00, move_num, 0x00000100)
+        
+        # move = [((move_num & 0x00000e00) >> 8 + 1, (move_num & 0x000001c0) >> 5 + 1),
+        #         ((move_num & 0x00000038) + 1, (move_num & 0x00000007) + 1)]
         
 
+        move = [((move_num & 0x00000007) + 1, ((move_num & 0x00000038) >> 3) + 1),
+                ( ((move_num & 0x000001c0) >> 6) + 1, ((move_num & 0x00000e00) >> 9) + 1)]
         
-
-
-
-
-        move = [[0, 0], [0, 0]]
-        move_position, move[0][0] = divmod(move_position, 8)
-        move_position, move[0][1] = divmod(move_position, 8)
-        move_position, move[1][0] = divmod(move_position, 8)
-        move_position, move[1][1] = divmod(move_position, 8)
-        
-        # flags = flag_dict[move_num]
-        
-
-        move[0][0] += 1
-        move[0][1] += 1
-        move[1][0] += 1
-        move[1][1] += 1
-
-        #return Move(tuple(move[0]), tuple(move[1]), flags)
+        return Move(tuple(move[0]), tuple(move[1]), flags)
 
     def from_bytes(_bytes: bytes):
         
@@ -73,28 +85,37 @@ class Move:
 
     
     def to_int(self) -> int:
-        flag_dict = {tuple(): 0,
-            ('WIN',): 1,
-            ('DRAW',): 2,
-            ('TIMEOUT',): 3,
-            ('TAKE',): 4,
-            ('QS_CASTLE',): 5,
-            ('KS_CASTLE',): 6,
-            ('KNIGHT',): 7,
-            ('BISHOP',): 8,
-            ('ROOK',): 9,
-            ('QUEEN',): 10,
-            ('TAKE', 'KNIGHT'): 11,
-            ('TAKE', 'BISHOP'): 12,
-            ('TAKE', 'ROOK'): 13,
-            ('TAKE', 'QUEEN'): 14}
+
+
+        move_num = 0
+
+        if self.flags['end'] == True:
+            move_num += 2 ** 32
+
         
-        #move has two tuples with x and y from 1 to 8
-        move_num = (self.start[0] - 1)
+        move_num += 2 ** 30 * (['', 'w', 'd', 'b'].index(self.flags['end_state']))
+
+        if self.flags['check'] == True:
+            move_num += 2 ** 28
+
+        move_num += 2 ** 26 * (Move.pieces.index(self.flags['piece']))
+
+        if self.flags['promotion'] == True:
+            move_num += 2 ** 25
+
+        
+        move_num += 2 ** 22 * (['', 'w', 'd', 'b'].index(self.flags['promotion_piece']))
+
+        move_num += 2 ** 20 * (['', 'QS', 'KS'].index(self.flags['castling']))
+
+        
+
+        move_num += (self.start[0] - 1)
         move_num += (self.start[1] - 1) * (2 ** 3)
         move_num += (self.dest[0] - 1) * (2 ** 6)
         move_num += (self.dest[1] - 1) * (2 ** 9)
-        move_num += flag_dict[self.flags] * (2 ** 12)
+
+
 
         return move_num
     
@@ -104,17 +125,21 @@ class Move:
     
     def __str__(self):
         
-        flag_str = ' ' + '|'.join(self.flags)
-        if self.piece:
-            return f'{self.piece} @ {self.start} -> {self.dest}{flag_str}'
-        else:
-            return f'{self.start} -> {self.dest}{flag_str}'
+        return f'{self.flags["piece"]} @ {self.start} -> {self.dest}'
 
 
 
 if __name__ == '__main__':
-    x = Move((8, 8), (2, 2), ('WIN',))
-    num = x.to_int()
-    print (num)
-    print (Move.from_int(num))
-    
+
+    # x = Move((2, 3), (4, 5))
+    # x.flags['check'] = True
+    # print (x)
+    # y = x.to_int()
+    # print (y)
+    # print (Move.from_int(y))
+
+    x = Move((2, 3), (4, 5))
+    x.flags['end'] = True
+    x.flags['check'] = True
+    y = x.to_int()
+    print (Move.from_int(y).flags)

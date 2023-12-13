@@ -109,7 +109,6 @@ class Pygame_Chess_Board:
         self.pos = pos
         self.size = size
         self.square_size = size // 8
-        # self.chess_coords_transform = lambda t: t
         self.square_colors = [WHITE_WOOD if (n % 8 + n // 8) % 2 == 1 else BLACK_WOOD for n in range(64)]
         self.default_sqaure_colors = self.square_colors.copy()
         self.transform = None

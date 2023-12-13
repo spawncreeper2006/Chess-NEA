@@ -128,6 +128,7 @@ class Board:
             pos += vector
             yield np.array(pos)
 
+
     def find_pieces(self):
         self.pieces = {'w': [], 'b': []}
         for x, y in zip(range(1, 9), range(1, 9)):
@@ -172,7 +173,7 @@ class Board:
 
         dest_square = self[move_array[1]]
         if dest_square.piece != None:
-            move.flags += ('TAKE',)
+            move.flags['take'] = True
             self.kill_piece(dest_square.piece)
 
         self[move_array[1]].piece = piece
@@ -202,7 +203,7 @@ class Board:
         square.remove_piece()
         self[move.start].piece = piece
 
-        if 'TAKE' in move.flags:
+        if move.flags['take']:
             self.revive_piece(move.dest)
 
         if piece.piece_char == 'p' and abs(move.start[1] - move.dest[1]) == 2:
