@@ -198,6 +198,7 @@ class Board:
     def undo(self, flip: bool = True):
         
         move = Move.from_int(self.stack.pop())
+        print (move)
         square = self[move.dest]
         piece = square.piece
         square.remove_piece()
@@ -363,12 +364,3 @@ def create_board() -> Board:
 
 
 
-# if __name__ == '__main__':
-#     b = create_board()
-#     # king = b[5, 1].piece
-#     # print (king.get_moves(np.array((5, 1)), b))
-
-#     print (b.pieces['w'][0])
-#     # start_pos = np.array([3, 1])
-#     # vector = np.array([-1, 1])
-#     # print (list(Board.follow_vector(start_pos, vector)))
