@@ -161,8 +161,22 @@ class Board:
     def can_move(self, color: Literal['w', 'b']):
         pass
 
+    def castle(self, move_array: np.ndarray):
+        if move_array[1][0] == 3:
+            pass
+
     
     def move(self, move_array: np.ndarray, flip: bool = True, human: bool = False):
+
+        end = False
+        end_state = ''
+        check = False
+        
+        promotion = False
+        promoting_piece = ''
+        castling = ''
+        take = False
+
         
         start_square = self[move_array[0]]
         piece: Piece = start_square.piece
@@ -173,7 +187,7 @@ class Board:
 
         dest_square = self[move_array[1]]
         if dest_square.piece != None:
-            move.flags['take'] = True
+            take = True
             self.kill_piece(dest_square.piece)
 
         self[move_array[1]].piece = piece
@@ -182,11 +196,16 @@ class Board:
             case 'p':
                 piece.has_moved = True
             case 'k':
+                if abs(move_array[0][0] - move_array[1][0]) == 2:
+                    pass
                 self.king_pos[self.current_turn] = move_array[1]
+
+                
             case _:
                 pass
 
-        move.set_flags()
+        #move.set_flags(end, end_state, check, piece.piece_char, promotion, promoting_piece, castling, take)
+        
         self.stack.push(move.to_int())
 
         if flip:
