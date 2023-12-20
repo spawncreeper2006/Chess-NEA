@@ -165,7 +165,7 @@ class Board:
     def move(self, move_array: np.ndarray, flip: bool = True, human: bool = False):
         
         start_square = self[move_array[0]]
-        piece = start_square.piece
+        piece: Piece = start_square.piece
         self.previous_piece_to_move = piece
         
         move = Move(move_array[0], move_array[1])
@@ -186,6 +186,7 @@ class Board:
             case _:
                 pass
 
+        move.set_flags()
         self.stack.push(move.to_int())
 
         if flip:
@@ -196,9 +197,16 @@ class Board:
         return not self.stack.is_empty()
     
     def undo(self, flip: bool = True):
+
+        print ('undo was pressed')
+
         
         move = Move.from_int(self.stack.pop())
+
         print (move)
+        print (move.flags)
+        print (bin(move.to_int())[2:])
+
         square = self[move.dest]
         piece = square.piece
         square.remove_piece()

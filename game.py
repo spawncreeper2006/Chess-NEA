@@ -471,7 +471,6 @@ class Window:
 
                 self.pygame_chess_board.set_color(np.array(self.selected), SELECTED_COLOR)
 
-                print (self.selected)
 
             elif coords in self.possible_move_coords:
                 

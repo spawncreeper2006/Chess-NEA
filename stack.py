@@ -57,7 +57,7 @@ class Stack:
 class NP_Stack:
     def __init__(self, max_size: int):
         self.max_size = max_size
-        self.__array = np.zeros(max_size, 'int16')
+        self.__array = np.zeros(max_size, 'int32')
         self.__pointer = 0
 
     def is_full(self) -> bool:

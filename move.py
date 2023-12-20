@@ -6,7 +6,7 @@ def write_bits(data: int, to_write: int, start: int, max_bit_length: int) -> int
     if len(bin(to_write)[2:]) > max_bit_length:
         raise ValueError(f'cannot convert {to_write} to bits of length {max_bit_length}')
     
-    if (2 ** (start) - 2 ** (start - max_bit_length)) & data:
+    if (2 ** (start + max_bit_length) - 2 ** (start)) & data:
         raise ValueError('cannot overwrite data with new bits')
     
     return data + 2 ** start * to_write
@@ -18,7 +18,7 @@ def write_bool(data: int, _bool: bool, position: int) -> int:
 
 
 def read_bits(data: int, start: int, length: int) -> int:
-    return ((2 ** (start) - 2 ** (start - length)) & data) >> start
+    return ((2 ** (start + length) - 2 ** (start)) & data) >> start
 
 def read_bool(data: int, position: int) -> bool:
     return bool(2 ** position & data)
@@ -70,30 +70,21 @@ class Move:
 
     def from_int(move_num: int):
 
-        print (bin(move_num)[2:].zfill(32))
-        print (hex(move_num)[2:].zfill(8))
 
         flags = {}
 
 
 
-        # flags['end'] = bool(move_num & 0x80000000)
-        # flags['end_state'] = ['', 'w', 'd', 'b'] [(move_num & 0x60000000) >> 29]
-        # flags['check'] = bool(move_num & 0x10000000)
-        # flags['piece'] = Move.pieces[(move_num & 0x0e000000) >> 25]
-        # flags['promotion_piece'] = bool(move_num & 0x01000000)
-        # flags['castling'] = ['', 'QS', 'KS'] [(move_num & 0x00c00000) >> 22]
-        # flags['take'] = bool(move_num & 0x00040000)
 
 
         flags['end'] = read_bool(move_num, 31)
-        flags['end_state'] = ['', 'w', 'd', 'b'] [read_bits(move_num, 30, 2)]
+        flags['end_state'] = ['', 'w', 'd', 'b'] [read_bits(move_num, 29, 2)]
         flags['check'] = read_bool(move_num, 27)
-        flags['piece'] = Move.pieces[read_bits(move_num, 26, 3)]
+        flags['piece'] = Move.pieces[read_bits(move_num, 24, 3)]
         flags['promotion'] = read_bool(move_num, 23)
-        flags['promotion_piece'] = Move.pieces[read_bits(move_num, 22, 3)]
-        flags['castling'] = ['', 'QS', 'KS'] [read_bits(move_num, 19, 2)]
-        flags['take'] = read_bool(move_num, 17)
+        flags['promotion_piece'] = Move.pieces[read_bits(move_num, 20, 3)]
+        flags['castling'] = ['', 'QS', 'KS'] [read_bits(move_num, 18, 2)]
+        flags['take'] = read_bool(move_num, 16)
 
 
 
@@ -112,15 +103,7 @@ class Move:
 
         move_num = 0
 
-        #storing flags in move_num with bit hacking 
-        # move_num += int(self.flags['end']) * 2 ** 31
-        # move_num += 2 ** 29 * (['', 'w', 'd', 'b'].index(self.flags['end_state']))
-        # move_num += int(self.flags['check']) * 2 ** 28
-        # move_num += 2 ** 25 * (Move.pieces.index(self.flags['piece']))
-        # move_num += int(self.flags['promotion']) * 2 ** 24
-        # move_num += 2 ** 23 * (Move.pieces.index(self.flags['promotion_piece']))
-        # move_num += 2 ** 19 * (['', 'QS', 'KS'].index(self.flags['castling']))
-        # move_num += 2 ** 17 * int(self.flags['take'])
+
 
         move_num = write_bool(move_num, self.flags['end'], 31)
 
@@ -128,16 +111,16 @@ class Move:
 
         move_num = write_bool(move_num, self.flags['check'], 27)
 
-        move_num = write_bits(move_num, to_write=Move.pieces.index(self.flags['piece']), start=26, max_bit_length=3)
+        move_num = write_bits(move_num, to_write=Move.pieces.index(self.flags['piece']), start=24, max_bit_length=3)
 
         move_num = write_bool(move_num, self.flags['promotion'], 23)
 
 
         move_num = write_bits(move_num, to_write=Move.pieces.index(self.flags['promotion_piece']), start=20, max_bit_length=3)
 
-        move_num = write_bits(move_num, to_write=['', 'QS', 'KS'].index(self.flags['castling']), start=19, max_bit_length=2)
+        move_num = write_bits(move_num, to_write=['', 'QS', 'KS'].index(self.flags['castling']), start=18, max_bit_length=2)
 
-        move_num = write_bool(move_num, self.flags['take'], 17)
+        move_num = write_bool(move_num, self.flags['take'], 16)
 
 
         # bits 10 - 17 are redundant
@@ -166,13 +149,13 @@ if __name__ == '__main__':
 
 
     move = Move((1, 1), (2, 2))
-    move.set_flags(end=False,
+    move.set_flags(end=True,
                    end_state='',
                    check=False,
-                   piece='p',
-                   promotion=False,
-                   promoting_piece='kn',
-                   castling='',
+                   piece='kn',
+                   promotion=True,
+                   promoting_piece='p',
+                   castling='QS',
                    take=False)
 
     num = move.to_int()
